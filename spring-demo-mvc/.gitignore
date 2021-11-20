@@ -1,0 +1,14 @@
+
+build/
+
+bin/
+
+lib/
+
+resources/
+
+.settings/
+
+.classpath
+
+.project
