@@ -1,0 +1,8 @@
+# compiled java classes
+/bin
+
+.settings/
+
+.classpath
+
+.project
