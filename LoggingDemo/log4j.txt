@@ -1,0 +1,11 @@
+Sat, 2021-09-25 19:15:29 FATAL main LoggingExample1 printLogs com.shri.automation.LoggingDemo.LoggingExample1.printLogs(LoggingExample1.java:26) Message from Fatal 
+Sat, 2021-09-25 19:18:13 DEBUG main LoggingExample1 printLogs 22 Message from Debug 
+Sat, 2021-09-25 19:18:13 INFO  main LoggingExample1 printLogs 23 Message from Info 
+Sat, 2021-09-25 19:18:13 WARN  main LoggingExample1 printLogs 24 Message from Warn 
+Sat, 2021-09-25 19:18:13 ERROR main LoggingExample1 printLogs 25 Message from Error 
+Sat, 2021-09-25 19:18:13 FATAL main LoggingExample1 printLogs 26 Message from Fatal 
+Sat, 2021-09-25 19:56:04 DEBUG main LoggingExample2 printLogs2 8  Message from Debug 
+Sat, 2021-09-25 19:56:04 INFO  main LoggingExample2 printLogs2 9  Message from Info 
+Sat, 2021-09-25 19:56:04 WARN  main LoggingExample2 printLogs2 10 Message from Warn 
+Sat, 2021-09-25 19:56:04 ERROR main LoggingExample2 printLogs2 11 Message from Error 
+Sat, 2021-09-25 19:56:04 FATAL main LoggingExample2 printLogs2 12 Message from Fatal 

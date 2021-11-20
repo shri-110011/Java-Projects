@@ -1,0 +1,17 @@
+# compiled java classes
+bin/
+
+# maven build outputs 
+target/
+
+test-output/
+
+webdriver/
+
+screenshots/
+
+.settings/
+
+.classpath
+
+.project

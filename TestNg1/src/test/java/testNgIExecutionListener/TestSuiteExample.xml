@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="IExecution Suite">
+
+	<listeners>
+		<listener class-name="testNgIExecutionListener.IExecutionListenerExample"></listener>
+	</listeners>
+
+	<test name="IExecution test">
+
+		<classes>
+			<class name="testNgIExecutionListener.IExecutionListenerTestCaseExample"></class>
+		</classes>
+
+	</test>
+
+</suite>

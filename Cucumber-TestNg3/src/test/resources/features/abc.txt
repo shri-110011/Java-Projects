@@ -1,0 +1,9 @@
+Feature: Google Search
+
+Scenario Outline: To search for a given keyword in Google
+Given I am on the Google Search Page '<url>'
+When I enter the '<searchText>'
+Then I verify I get search results greater than '<count>'
+
+|url|searchText|count|
+##@data@src/test/java/dataProvider/TestData.xlsx@Sheet1
