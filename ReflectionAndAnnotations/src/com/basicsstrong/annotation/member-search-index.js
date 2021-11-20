@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.basicsstrong.annotation","c":"MyFunInterface","l":"method()"}]
