@@ -2,7 +2,6 @@
 public class LearnStringBuffer {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		StringBuffer sbr1 = new StringBuffer();
 		StringBuffer sbr2 = new StringBuffer(8);
 		StringBuffer sbr3 = new StringBuffer("shirt");

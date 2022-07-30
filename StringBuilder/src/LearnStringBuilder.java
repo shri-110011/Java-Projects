@@ -1,7 +1,6 @@
 public class LearnStringBuilder {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		StringBuilder sb1 = new StringBuilder();
 		StringBuilder sb2 = new StringBuilder("shri");
 		System.out.println("sb1.capacity(): "+sb1.capacity());

@@ -11,6 +11,7 @@ class Test1
 		}
 		catch (Exception e)
 		{
+			System.out.println("Flag 3");
 			str += "c";
 		}
 	}
@@ -24,19 +25,23 @@ class Test1
 		}
 		catch(Exception e)
 		{
+			System.out.println("Flag 2");
 			throw new Exception();
 		}
 		finally
 		{
+			System.out.println("Flag 4");
 			str += "e";
 		}
 
+		System.out.println("Flag 5");
 		str += "f";
 
 	}
 	
 	void C() throws Exception
 	{
+		System.out.println("Flag 1");
 		throw new Exception();
 	}
 

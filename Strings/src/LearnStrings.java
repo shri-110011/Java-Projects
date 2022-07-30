@@ -4,7 +4,6 @@ import java.util.Collections;
 public class LearnStrings {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		String str = "A.Shrikant";
 		String str1 = new String("Arjun");
 		System.out.println(str1);

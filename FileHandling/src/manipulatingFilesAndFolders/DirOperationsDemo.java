@@ -2,7 +2,7 @@ package manipulatingFilesAndFolders;
 
 import java.io.File;
 
-public class FileManipulator {
+public class DirOperationsDemo {
 	
 	public void createDirectory(String dirName) {
 		
@@ -50,7 +50,7 @@ public class FileManipulator {
 
 	public static void main(String[] args) {
 		
-		FileManipulator fm = new FileManipulator();
+		DirOperationsDemo fm = new DirOperationsDemo();
 		
 		String dirName = "src\\screenshots\\";
 		

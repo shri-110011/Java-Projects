@@ -39,7 +39,6 @@ public class LookAndSay {
         return sbr1.toString();
     }
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		System.out.println(lookandsay(3));
 	}
 

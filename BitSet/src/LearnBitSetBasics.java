@@ -3,7 +3,7 @@ import java.util.BitSet;
 public class LearnBitSetBasics {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+
 		//Here we are using the default constructor BitSet() to instantiate a BitSet object.
 		//The default size of the BitSet object is 64 bit or 8 bytes.
 		BitSet b1 = new BitSet();

@@ -8,7 +8,6 @@ class UserDefinedException extends Exception {
 public class LearnExceptionHandling1  {
 
 	public static void main(String[] args) throws UserDefinedException {
-		// TODO Auto-generated method stub
 		
 		try {
 			throw new UserDefinedException("UDE");
