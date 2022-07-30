@@ -33,7 +33,8 @@ Steps to create a single folder having multiple java projects in Eclipse:
 2. Create a java project say "TestProject" in eclipse by choosing the default location which will be the workspace.
 3. Move the "TestProject" into the folder "Test".
 4. Refresh the Project Explorer.
-5. Now go to File >  Import... and select "Projects from Folder or Archive" option.
+5. Now go to File >  Import... and select "Projects from Folder or Archive" option 
+under the General section.
 6. Click on Directory and choose the folder "Test" which is the one that we want to hold multiple java projects.
 7. Click on Finish.
 And you should now see the folder "Test" containing java projects in Project Explorer.
