@@ -18,7 +18,6 @@ class Orange implements Runnable{
 public class LearnRunnableInterface {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Apple obj1 = new Apple();
 		Orange obj2 = new Orange();
 	

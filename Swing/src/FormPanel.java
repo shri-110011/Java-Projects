@@ -4,15 +4,19 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
@@ -23,8 +27,14 @@ public class FormPanel extends JPanel {
 	private JTextField occupationField;
 	private JButton okBtn;
 	private FormListener formListener;
-	private JList ageList;
-	private JComboBox empCombo;
+	private JList<AgeCategory> ageList;
+	private JComboBox<String> empCombo;
+	private JCheckBox citizenCheck;
+	private JTextField taxIdField;
+	private JLabel taxIdLabel;
+	private JRadioButton femaleRadio;
+	private JRadioButton maleRadio;
+	private ButtonGroup genderGroup;
 	
 	public FormPanel() {
 		Dimension dim = getPreferredSize();
@@ -37,6 +47,24 @@ public class FormPanel extends JPanel {
 		occupationField = new JTextField(10);
 		ageList = new JList();
 		empCombo = new JComboBox();
+		taxIdField = new JTextField(10);
+		taxIdLabel = new JLabel("Tax ID: ");
+		
+		genderGroup = new ButtonGroup();
+		femaleRadio = new JRadioButton("Female");
+		maleRadio = new JRadioButton("Male");
+		
+		maleRadio.setActionCommand("male");
+		femaleRadio.setActionCommand("female");
+		
+		maleRadio.setSelected(true);
+		
+		okBtn = new JButton("Submit");
+		
+		okBtn.setMnemonic(KeyEvent.VK_O);
+		
+		nameLabel.setDisplayedMnemonic(KeyEvent.VK_N);
+		nameLabel.setLabelFor(nameField);
 		
 		// Setup list box
 		DefaultListModel<AgeCategory> ageModel = new DefaultListModel<AgeCategory>();
@@ -47,7 +75,7 @@ public class FormPanel extends JPanel {
 		
 		ageList.setPreferredSize(new Dimension(110,70));
 		ageList.setBorder(BorderFactory.createEtchedBorder());
-		ageList.setSelectedIndex(1);
+		ageList.setSelectedIndex(0);
 		
 		// Setup combo box
 		DefaultComboBoxModel<String> empModel = new DefaultComboBoxModel<String>();
@@ -55,11 +83,29 @@ public class FormPanel extends JPanel {
 		empModel.addElement("Unemployed");
 		empModel.addElement("Self-employed");
 		empCombo.setModel(empModel);
+		empCombo.setSelectedIndex(1);
 		
 		
+		//Setup the US citizen check box
+		citizenCheck = new JCheckBox();
 		
+		//Setup the taxId field and taxtId label
 		
-		okBtn = new JButton("OK");
+		taxIdField.setEnabled(false);
+		taxIdLabel.setEnabled(false);
+		
+		//Set up the gender radio buttons
+		genderGroup.add(femaleRadio);
+		genderGroup.add(maleRadio);
+		
+		citizenCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolean isTicked = citizenCheck.isSelected();
+				taxIdField.setEnabled(isTicked);
+				taxIdLabel.setEnabled(isTicked);
+			}
+		});
+		
 		okBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -68,10 +114,14 @@ public class FormPanel extends JPanel {
 				String occupation = occupationField.getText();
 				AgeCategory ageCategory = (AgeCategory)ageList.getSelectedValue();
 				String empCat = (String)empCombo.getSelectedItem();
+				boolean usCitizen = citizenCheck.isSelected();
+				String taxId = taxIdField.getText();
+				String gender = genderGroup.getSelection().getActionCommand();
 				
-				System.out.println(empCat);
+				System.out.println("employment category:"+empCat);
 				
-				FormEvent formEvent = new FormEvent(e, name, occupation, ageCategory.getId(), empCat);
+				FormEvent formEvent = new FormEvent(e, name, occupation, ageCategory.getId(), empCat, usCitizen, 
+						taxId, gender);
 				
 				if(formListener != null) {
 					formListener.formEventOccurred(formEvent);
@@ -110,6 +160,9 @@ public class FormPanel extends JPanel {
 		////////// Next row  //////////////////////////////////
 		gc.gridy++;
 		
+		gc.weightx = 1;
+		gc.weighty = 0.1;
+		
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.LINE_END;
 		gc.insets = new Insets(0,0,0,5);
@@ -123,6 +176,9 @@ public class FormPanel extends JPanel {
 		////////// Next row  //////////////////////////////////
 		gc.gridy++;
 		
+		gc.weightx = 1;
+		gc.weighty = 0.2;
+		
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.FIRST_LINE_END;
 		gc.insets = new Insets(0, 0, 0, 5);
@@ -135,6 +191,9 @@ public class FormPanel extends JPanel {
 		
 		//////////Next row  //////////////////////////////////
 		gc.gridy++;
+		
+		gc.weightx = 1;
+		gc.weighty = 0.2;
 		
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.FIRST_LINE_END;
@@ -150,7 +209,70 @@ public class FormPanel extends JPanel {
 		gc.gridy++;
 		
 		gc.weightx = 1;
-		gc.weighty = 1;
+		gc.weighty = 0.2;
+		
+		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.FIRST_LINE_END;
+		gc.insets = new Insets(0, 0, 0, 5);
+		add(new JLabel("US Citizen: "), gc);
+		
+		gc.gridx = 1;
+		gc.anchor = GridBagConstraints.FIRST_LINE_START;
+		gc.insets = new Insets(0, 0, 0, 5);
+		add(citizenCheck, gc);
+		
+		//////////Next row  //////////////////////////////////
+		
+		gc.gridy++;
+		
+		gc.weightx = 1;
+		gc.weighty = 0.2;
+		
+		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.FIRST_LINE_END;
+		gc.insets = new Insets(0, 0, 0, 5);
+		add(taxIdLabel, gc);
+		
+		gc.gridx = 1;
+		gc.anchor = GridBagConstraints.FIRST_LINE_START;
+		gc.insets = new Insets(0, 0, 0, 5);
+		add(taxIdField, gc);
+		
+		
+		////////// Next row  //////////////////////////////////
+		
+		gc.gridy++;
+		
+		gc.weightx = 1;
+		gc.weighty = 0.05;
+		
+		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.LINE_END;
+		gc.insets = new Insets(0,0,0,5);
+		add(new JLabel("Gender"), gc);
+		
+		gc.gridx = 1;
+		gc.anchor = GridBagConstraints.LINE_START;
+		gc.insets = new Insets(0,0,0,0);
+		add(maleRadio, gc);
+		
+		//////////Next row  //////////////////////////////////
+		
+		gc.gridy++;
+		
+		gc.weightx = 1;
+		gc.weighty = 0.1;
+		
+		gc.gridx = 1;
+		gc.anchor = GridBagConstraints.LINE_START;
+		gc.insets = new Insets(0,0,0,0);
+		add(femaleRadio, gc);
+		
+		//////////Next row  //////////////////////////////////
+		gc.gridy++;
+		
+		gc.weightx = 1;
+		gc.weighty = 2;
 		gc.gridx = 1;
 		gc.anchor = GridBagConstraints.FIRST_LINE_START;
 		add(okBtn, gc);

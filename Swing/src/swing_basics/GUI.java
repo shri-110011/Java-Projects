@@ -1,6 +1,5 @@
 package swing_basics;
 
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.ButtonGroup;
@@ -10,7 +9,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 public class GUI {
 
@@ -45,7 +43,7 @@ public class GUI {
 		jf.add(jp);
 		jf.add(jl);
 		
-		jf.setBounds(10, 10, 300, 200);
+		jf.setBounds(200, 100, 300, 200);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jf.setVisible(true);
 		

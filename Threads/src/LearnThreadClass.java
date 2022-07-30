@@ -19,7 +19,6 @@ class Hello extends Thread{
 public class LearnThreadClass {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Hi obj1 = new Hi();
 		Hello obj2 = new Hello();
 		

@@ -25,7 +25,7 @@ public class Main {
 		long duration = stopMillis - startMillis;
 		File outputFile = new File(Destination_File);
 		ImageIO.write(resultImage, "jpg", outputFile);
-		System.out.println(duration);
+		System.out.println("Duration: "+duration);
 	}
 	public static void recolorMultiThreaded(BufferedImage originalImage, BufferedImage resultImage, int noOfThreads) {
 		List<Thread> threads = new ArrayList<>();
@@ -71,7 +71,7 @@ public class Main {
 	public static void recolorPixel(BufferedImage originalImage, BufferedImage resultImage, int x, int y) {
 		int rgb = originalImage.getRGB(x, y);
 		if(x==0 && y==0)
-			System.out.println(rgb);
+			System.out.println("#"+rgb);
 		
 		int red = getRed(rgb);
 		int green = getGreen(rgb);
