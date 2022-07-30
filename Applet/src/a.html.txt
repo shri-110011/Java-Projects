@@ -1,0 +1,2 @@
+<applet code=AppletSkel width=400 height=200>
+</applet>
