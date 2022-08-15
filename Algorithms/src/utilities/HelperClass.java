@@ -36,4 +36,9 @@ public class HelperClass {
 		a[swap_pos1] = a[swap_pos2];
 		a[swap_pos2] = temp;
 	}
+	
+	public static int generateRandomNumber(int min, int max) {
+		int rn = (int)Math.floor( Math.random()*max) + min;
+		return rn;
+	}
 }

@@ -26,7 +26,7 @@ public class BinarySearchTree {
 //		System.out.println("Node added!");
 	}
 
-	public Node addNode(Node root, int data) {
+	private Node addNode(Node root, int data) {
 		
 		if(root == null) {
 			root = new Node(data);
@@ -75,23 +75,56 @@ public class BinarySearchTree {
 	public Node getInorderPredecessor(int data) {
 		if(root != null) {
 			Node temp = root, inOrderPredecessor = null;
+			boolean flag = false;
 
 			while(temp != null) {
 				if(temp.m_info == data) {
 					temp = temp.m_left_child;
+					// flag is set if the data is present in the BST.
+					flag = true;
 				}
 				else if(data < temp.m_info){
 					temp = temp.m_left_child;
 				}
 				else {
-					inOrderPredecessor = temp;
+					if(flag)
+						inOrderPredecessor = temp;
 					temp = temp.m_right_child;
 				}
 			}
 			return inOrderPredecessor;
 		}
 		else {
-			System.out.println("Can't find inorder predecessor because root of BST is null!");
+//			System.out.println("Can't find inorder predecessor because root of BST is null!");
+			return null;
+		}
+	}
+	
+	public Node getInorderPredecessor(Node node) {
+		if(node != null) {
+			Node temp = node, inOrderPredecessor = null;
+			int data = node.m_info;
+			boolean flag = false;
+
+			while(temp != null) {
+				if(temp.m_info == data) {
+					temp = temp.m_left_child;
+					// flag is set if the data is present in the BST.
+					flag = true;
+				}
+				else if(data < temp.m_info){
+					temp = temp.m_left_child;
+				}
+				else {
+					if(flag)
+						inOrderPredecessor = temp;
+					temp = temp.m_right_child;
+				}
+			}
+			return inOrderPredecessor;
+		}
+		else {
+//			System.out.println("Can't find inorder predecessor because root of BST is null!");
 			return null;
 		}
 	}
@@ -126,7 +159,7 @@ public class BinarySearchTree {
 				else {
 					Node temp = getInorderPredecessor(data);
 					node.m_info = temp.m_info;
-					removeNode(node.m_left_child, temp.m_info);
+					node.m_left_child = removeNode(node.m_left_child, temp.m_info);
 				}
 			}
 			return node;
@@ -199,12 +232,12 @@ public class BinarySearchTree {
  	
 	// This method return a LinkedList containing the nodes at level
     // specified by level in the level order.
- 	private void getNodesAtLevel(Node root, int level, LinkedList<Integer> list) {
+ 	private void getNodesAtLevel(Node root, int level, LinkedList<Node> list) {
  		
  		if(root == null) return;
  		else {
  			if(level == 0) {
- 				list.add(root.m_info);
+ 				list.add(root);
  				return;
  			}
  			else {
@@ -284,20 +317,27 @@ public class BinarySearchTree {
  	 *             root
  	 *                |-- 
  	 */
- 	private String traversePreorder(Node root) {
+ 	private String traversePreorder(Node root, boolean ...printColorInfo) {
  		
  		if(root == null)
  			return "";
  		
  		StringBuilder sb = new StringBuilder();
- 		sb.append(root.m_info);
+ 		if(printColorInfo.length > 0) {
+ 			if(printColorInfo[0])
+ 	 			sb.append(root.m_info+" "+root.nodeColor);
+ 			else
+ 	 			sb.append(root.m_info);
+ 		}
+ 		else
+ 			sb.append(root.m_info);
  		
  		String pointerForLeft = root.m_right_child != null? "├──" : "└──";
  		String pointerForRight = "└──";
  		
 
- 		 traverseNodes(sb, root.m_left_child, "", pointerForLeft, root.m_right_child != null);
-	     traverseNodes(sb,  root.m_right_child, "", pointerForRight, false);
+ 		 traverseNodes(sb, root.m_left_child, "", pointerForLeft, root.m_right_child != null, printColorInfo);
+	     traverseNodes(sb,  root.m_right_child, "", pointerForRight, false, printColorInfo);
  		
  		return sb.toString();
  	}
@@ -308,12 +348,19 @@ public class BinarySearchTree {
  	 * This is the method that prints all the nodes of BinarySearchTree but 
  	 * the root.
  	 */
- 	private void traverseNodes(StringBuilder sb, Node node, String padding, String pointer, boolean hasRightSibling) {
+ 	private void traverseNodes(StringBuilder sb, Node node, String padding, String pointer, boolean hasRightSibling, boolean ...printColorInfo) {
  		if(node != null) {
  			sb.append("\n");
 	        sb.append(padding);
 	        sb.append(pointer);
-	        sb.append(node.m_info);
+	        if(printColorInfo.length > 0) {
+	 			if(printColorInfo[0])
+	 	 			sb.append(node.m_info+" "+node.nodeColor);
+	 			else
+	 	 			sb.append(node.m_info);
+	 		}
+	 		else
+	 			sb.append(node.m_info);
 	        
 	        StringBuilder paddingBuilder = new StringBuilder(padding);
 	        if(hasRightSibling)
@@ -325,8 +372,8 @@ public class BinarySearchTree {
 	        String pointerForRight = "└──";
 	        String pointerForLeft = (node.m_right_child != null) ? "├──" : "└──";
 
-	        traverseNodes(sb, node.m_left_child, paddingForBoth, pointerForLeft, node.m_right_child != null);
-	        traverseNodes(sb, node.m_right_child, paddingForBoth, pointerForRight, false);
+	        traverseNodes(sb, node.m_left_child, paddingForBoth, pointerForLeft, node.m_right_child != null, printColorInfo);
+	        traverseNodes(sb, node.m_right_child, paddingForBoth, pointerForRight, false, printColorInfo);
 	        
  		}
  		
@@ -337,8 +384,8 @@ public class BinarySearchTree {
  	 * The only disadvantage being that it takes time to interpret which
  	 * child is right child or left child.
  	 */
- 	public void printBT() {
- 		System.out.println(traversePreorder(root));
+ 	public void printBT(boolean ...printColorInfo) {
+ 		System.out.println(traversePreorder(root, printColorInfo));
  	}
  	
  	/* This method returns the BinarySearchTree height starting from the 
@@ -410,7 +457,7 @@ public class BinarySearchTree {
  	 * enum: type to populate the LinkedList.
  	 * 
  	 */
- 	private void traverseNodes(Node node, TraversalType type, LinkedList<Integer> list) {
+ 	private void traverseNodes(Node node, TraversalType type, LinkedList<Node> list) {
 		if(node == null) {
 			return;
 		}
@@ -419,13 +466,13 @@ public class BinarySearchTree {
 			// Keep on going to the root of left subtree
 			traverseNodes(node.m_left_child, type, list);
 			
-			list.add(node.m_info);
+			list.add(node);
 			
 			// Keep on going to the root of right subtree
 			traverseNodes(node.m_right_child, type, list);
 		}
 		else if(type == TraversalType.PREORDER) {
-			list.add(node.m_info);
+			list.add(node);
 			
 			// Keep on going to the root of left subtree
 			traverseNodes(node.m_left_child, type, list);
@@ -440,7 +487,7 @@ public class BinarySearchTree {
 			// Keep on going to the root of right subtree
 			traverseNodes(node.m_right_child, type, list);
 			
-			list.add(node.m_info);
+			list.add(node);
 		}
 		else if(type == TraversalType.LEVELORDER) {
 			int height = getTreeHeight(root);
@@ -459,8 +506,8 @@ public class BinarySearchTree {
  	 * TraversalType enum: type.
  	 * 
  	 */
- 	public LinkedList<Integer> getListView(Node node, TraversalType type) {
- 		LinkedList<Integer> list = new LinkedList<Integer>();
+ 	public LinkedList<Node> getListView(Node node, TraversalType type) {
+ 		LinkedList<Node> list = new LinkedList<>();
  		if(node == null) {
 			return list;
 		}
@@ -469,13 +516,15 @@ public class BinarySearchTree {
  	}
 
 	public static void main(String[] args) {
-		int a[] = {6,3,14,2,4,19,1,8,-1,5,-9,20,-2};
+		int a[] = {6, 3, 14, 2, 4, 19, 1, 8, -1, 5, -9, 20, -2};
 		
 		BinarySearchTree bst = new BinarySearchTree();
 		
 		for(int i=0; i<a.length; i++) {
 			bst.add(a[i]);
 		}
+		
+		bst.remove(6);
 		
 //		bst.displayBST(bst.root, TraversalType.POSTORDER);
 		//System.out.println();

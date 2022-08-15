@@ -6,52 +6,53 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import algorithms.tree_algorithms.BinarySearchTree;
+import algorithms.tree_algorithms.AVLTree;
 import algorithms.tree_algorithms.BinarySearchTree.TraversalType;
 import algorithms.tree_algorithms.Node;
 import utilities.HelperClass;
 
-public class BST_Test {
+public class AVLTree_Test {
 	
 	@Test
 	public void testAddMethod() {
 		int input[][] = {
-				{12, 8, 16, 2, 14, 19, 1, 17, 20},
 				{6, 3, 14, 2, 4, 19, 1, 8, -1, 5, -9, 20, -2},
+				{10, 3, 15, 2, 13, 19, 1, 16, 20},
+				{12, 8, 16, 2, 10, 14, 19, 1, 3, 9, 11, 13, 15, 17, 20},
 				{234, 567, 123, 45, 1001, 4567, 678, 1234, 543, 789, 2345, 46}
-		}, no_of_test_cases = input.length;
-		
+		};
 		// {12, 8, 16, 2, 10, 14, 19, 1, 3, 9, 11, 13, 15, 17, 20}
 		// {10, 3, 15, 2, 13, 19, 1, 16, 20}
 		// {234, 567, 123, 45, 1001, 4567, 678, 1234, 543, 789, 2345, 46}
 		// {6,3,14,2,4,19,1,8,-1,5,-9,20,-2}
 		
 		int output[][] = {
-				{12, 8, 16, 2, 14, 19, 1, 17, 20},
-				{6, 3, 14, 2, 4, 8, 19, 1, 5, 20, -1, -9, -2},
-				{234, 123, 567, 45, 543, 1001, 46, 678, 4567, 789, 1234, 2345}
+				{3, 1, 6, -2, 2, 4, 14, -9, -1, 5, 8, 19, 20},
+				{10, 2, 15, 1, 3, 13, 19, 16, 20},
+				{12, 8, 16, 2, 10, 14, 19, 1, 3, 9, 11, 13, 15, 17, 20},
+				{567, 234, 1001, 46, 543, 678, 2345, 45, 123, 789, 1234, 4567}
 		};
+		// {3, 1, 6, -2, 2, 4, 14, -9, -1, 5, 8, 19, 20}
 		
-		for(int row=0; row<no_of_test_cases; row++) {
+		for(int row=0; row<input.length; row++) {
 			LinkedList<Node> expectedResult = new LinkedList<>();
 			for(int i=0; i<input[row].length; i++) {
 				expectedResult.add(new Node(output[row][i]));
 			}
-			BinarySearchTree bst = new BinarySearchTree();
+			AVLTree tree = new AVLTree();
 			
 			for(int i: input[row]) {
-				bst.add(i);
+				tree.add(i);
 			}
 			
 			LinkedList<Node> actualResult = null;
-			actualResult = bst.getListView(bst.getRoot(), TraversalType.LEVELORDER);
+			actualResult = tree.getListView(tree.getRoot(), TraversalType.LEVELORDER);
 			System.out.println("-------------------Testing add method");
 			System.out.println("expectedResult: "+expectedResult);
 			System.out.println("actualResult: "+actualResult);
 			
 			Assert.assertEquals("Actual and expected result don't match!", true, actualResult.equals(expectedResult));	
 		}
-
 	}
 	
 	@Test
@@ -60,10 +61,9 @@ public class BST_Test {
 				{12, 8, 16, 2, 14, 19, 1, 17, 20},
 				{10, 3, 15, 2, 13, 19, 1, 16, 20},
 				{234, 567, 123, 45, 1001, 4567, 678, 1234, 543, 789, 2345, 46}
-		},
-		no_of_test_cases = input.length;
+		};
 		
-		for(int row=0; row<no_of_test_cases; row++) {
+		for(int row=0; row<input.length; row++) {
 			LinkedList<Node> expectedResult = new LinkedList<>();
 			
 			int curInputLen = input[row].length;
@@ -73,10 +73,10 @@ public class BST_Test {
 			
 			Collections.sort(expectedResult);
 			
-			BinarySearchTree bst = new BinarySearchTree();
+			AVLTree tree = new AVLTree();
 			
 			for(int i: input[row]) {
-				bst.add(i);
+				tree.add(i);
 			}
 			
 			/* We delete:
@@ -95,10 +95,10 @@ public class BST_Test {
 				
 				expectedResult.remove(new Node(elementToBeRemoved));
 				
-				bst.remove(elementToBeRemoved);
+				tree.remove(elementToBeRemoved);
 				
 				LinkedList<Node> actualResult = null;
-				actualResult = bst.getListView(bst.getRoot(), TraversalType.INORDER);
+				actualResult = tree.getListView(tree.getRoot(), TraversalType.INORDER);
 				
 				System.out.println("-------------------Testing remove method");
 				System.out.println("elementToBeRemoved: "+elementToBeRemoved);
