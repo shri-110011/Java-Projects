@@ -3,7 +3,7 @@ package test_algorithms.test_math_expression_parser;
 import org.junit.Assert;
 import org.junit.Test;
 
-import alogorithms.math_expression_parser.PostfixToInfixConvertor;
+import algorithms.math_expression_parser.PostfixToInfixConvertor;
 
 public class PostfixToInfixConvertorTest {
 	

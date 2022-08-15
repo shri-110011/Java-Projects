@@ -1,51 +1,28 @@
-package alogorithms.math_expression_parser;
+package algorithms.math_expression_parser;
 
 import java.util.Stack;
 
-public class InfixToPrefixConvertor {
+public class InfixToPostfixConvertor {
 	
-	/* This covertInfixToPrefix(String exp) method doesn't check the 
+	/* This covertInfixToPostfix(String exp) method doesn't check the 
 	 * validity of the given infix expression except for the invalid
 	 * operand and invalid character that may appear in the infix 
 	 * expression.
 	 * 
 	 */
-	public String covertInfixToPrefix(String exp) {
-		StringBuilder sb_exp = new StringBuilder();
+	public String covertInfixToPostfix(String exp) {
 		
 		/* Here we removing any space characters from the infix 
 		 * expression exp.
 		 */
 		exp = exp.replace(" ", "");
 		
-		/* Here we are scanning the infix expression(exp) from right to
-		 * left and converting each ')' to '(' and each '(' to ')' and 
-		 * then appending the character to the StringBuilder sb_exp.
-		 * 
-		 */
-		for(int i=exp.length()-1; i>=0; i--) {
-			char ch = exp.charAt(i);
-			if(ch == '(') sb_exp.append(")");
-			else if(ch == ')') sb_exp.append("(");
-			else sb_exp.append(ch);
-		}
-//		System.out.println(sb_exp.toString());
-		
-		String orig_exp = exp;
-		exp = sb_exp.toString();
-		
 		Stack<String> stack = new Stack<>();
 		StringBuilder sb = new StringBuilder();
-		int sb_size = 0;
-		boolean alphabetEncountered = false;
+		boolean operandEncountered = false, operandIsVariable = true;
 		
 		String temp = null;
-		int expLen = exp.length();
-		
-		/* Here we are scanning the sb_exp which is the reverse of orig_exp
-		 * and from left to right.
-		 */
-		for(int i=0; i<expLen; i++) {
+		for(int i=0; i<exp.length(); i++) {
 			String  ch = Character.toString(exp.charAt(i));
 			
 			// If the character is a "(" then push that to stack.
@@ -58,42 +35,31 @@ public class InfixToPrefixConvertor {
 				while(!stack.empty() &&  !(temp = stack.pop()).equals("(")) {
 					if(temp.equals(")") || temp.equals("(")) continue;
 					sb.append(temp+" ");
-					sb_size+=2;
 				}
 			}
 			else if(MathExpressionUtilities.isOperand(ch)) {
 				// Here we are sure that the character is an operand.
 				do {
-					if(Character.isAlphabetic(ch.charAt(0)) 
-							&& !alphabetEncountered) {
-						alphabetEncountered = true;
+					if(!operandEncountered) {
+						operandEncountered = true;
+						if(Character.isAlphabetic(ch.charAt(0)))
+							operandIsVariable = true;
+						else
+							operandIsVariable = false;
+					}
+					else {
+						if(Character.isAlphabetic(ch.charAt(0)) && !operandIsVariable) {
+							throw new ExpressionError("Invalid operand: '"+ch+"' at index: "+i+" in the expression: \""+exp+"\"");
+						}
 					}
 					sb.append(ch);
-					sb_size++;
 					i++;
 					if(i == exp.length()) break;
 					ch = Character.toString(exp.charAt(i));
 				}while(MathExpressionUtilities.isOperand(ch));
 				i--;
-				
-				/* Here we are checking if the last character of the 
-				 * operand is a digit or not and then using the 
-				 * alphabetEncountered(which tells if an alphabet has been 
-				 * encountered before while scanning the current operand)
-				 * variable to decide if this operand is a valid one or 
-				 * not.
-				 * Eg: a+w1 -> 1w+a w1 is a valid operand because w1 
-				 * represents a variable.
-				 *     or
-				 *     a+1w -> w1+a 1w is an invalid operand
-				 */
-				char curChar = exp.charAt(i);
-				if(Character.isDigit(curChar) && alphabetEncountered == true)
-					throw new ExpressionError("Invalid operand: '"+curChar+"' at index: "+(expLen - i -1)+" in the expression: \""+orig_exp+"\"");
-				
 				sb.append(" ");
-				sb_size++;
-				alphabetEncountered = false;
+				operandEncountered = false;
 			}
 			// Here we check if the character is an operator or not.
 			else if(MathExpressionUtilities.isOperator(ch)){
@@ -105,26 +71,6 @@ public class InfixToPrefixConvertor {
 					stack.push(ch);
 					continue;
 				}
-				
-				/* Here we take care of the case when infix expression is:
-				 * -7+8 then the prefix should be + -7 8 and not + - 7 8
-				 * 
-				 */
-				if(ch.equals("-")) {
-					if(i == expLen-1) {
-						sb.replace(sb_size-1, sb_size, "- ");
-						continue;
-					}
-					else {
-						ch = Character.toString(exp.charAt(i+1));
-						if(MathExpressionUtilities.isOperator(ch)) {
-							sb.replace(sb_size-1, sb_size, "- ");
-							continue;
-						}
-						ch = "-";
-					}
-				}
-				
 				/* Here we check the precedence of the current operator 
 				 * with the top element in stack. Also at this point it is
 				 * confirmed that the top of stack is an operator.
@@ -160,7 +106,6 @@ public class InfixToPrefixConvertor {
 					 */
 					do {
 						sb.append(stack.pop()+" ");
-						sb_size+=2;
 						
 						if(stack.empty()) break;
 						
@@ -184,9 +129,8 @@ public class InfixToPrefixConvertor {
 					 * stack.
 					 */
 					if(!stack.empty() && currentOperatorRelativePrecedence == 0) {
-						if(!MathExpressionUtilities.hasLeftAssociativity(stack.peek())) {
+						if(MathExpressionUtilities.hasLeftAssociativity(stack.peek())) {
 							sb.append(stack.pop()+" ");
-							sb_size+=2;
 						}
 					}
 					// Finally we push the current operator to the stack.
@@ -197,15 +141,19 @@ public class InfixToPrefixConvertor {
 				 * operator has same precedence as the top element in stack.
 				 */
 				else {
-					if(!MathExpressionUtilities.hasLeftAssociativity(stack.peek())) {
+					if(MathExpressionUtilities.hasLeftAssociativity(stack.peek())) {
 						sb.append(stack.pop()+" ");
-						sb_size+=2;
 					}
 					stack.push(ch);
 				}
 			}
 			else {
-				throw new ExpressionError("Invalid character: '"+ch+"' at index: "+(expLen-i-1)+" in the expression: \""+orig_exp+"\"");
+				/* Here we are allowing the delimiter space(" ") to separate
+				 * variables and operators.
+				 */
+				if(ch.equals(" ")) continue;
+				throw new ExpressionError("Invalid character: '"+ch+"' at index: "+i+" in the expression: \""+exp+"\"");
+				
 			}
 		}
 		/* Here we are checking if the stack has any elements even after 
@@ -220,17 +168,14 @@ public class InfixToPrefixConvertor {
 					continue;
 				}
 				sb.append(stack.pop()+" ");
-				sb_size+=2;
 			}
 		}
 		
-		/* Here we return the reverse and trimmed version of 
-		 * StrigBuilder sb. 
-		 */
-		return sb.reverse().toString().trim();
+		// Here we return the trimmed version of StrigBuilder sb. 
+		return sb.toString().trim();
 	}
 	
-	public double solvePrefix(String exp) {
+	public double solvePostfix(String exp) {
 		
 		Stack<Double> stack = new Stack<>();
 		String exp_arr[] = exp.split(" ");
@@ -239,15 +184,14 @@ public class InfixToPrefixConvertor {
 		 * so that we can provide rich ExpressionError messages.
 		 */
 		
-		int idx=0, len = exp_arr.length;
+		int idx=0;
 		
-		for(int j=len-1; j>=0; j--) {
-			String element = exp_arr[j];
+		for(String element: exp_arr) {
 			if(MathExpressionUtilities.isOperand(element)) {
 				
 				/* We are looping through the operand to check if the 
 				 * operand contains any alphabet or not since variable
-				 * are not allowed in the prefix expression.
+				 * are not allowed in the postfix expression.
 				 */
 				for(int i=0; i<element.length(); i++) {
 					int ch = element.charAt(i);
@@ -269,22 +213,22 @@ public class InfixToPrefixConvertor {
 				 * operation in order to avoid the EmptyStackException.
 				 */
 				if(stack.isEmpty())
-					throw new ExpressionError("Invalid prefix expression: \""+exp+"\"");
-				operand1 = stack.pop();
+					throw new ExpressionError("Invalid postfix expression: \""+exp+"\"");
+				operand2 = stack.pop();
 				
 				if(stack.isEmpty()) {
-					/* We are here accounting for the case when prefix 
-					 * expression is say: + - 7 8
+					/* We are here accounting for the case when postfix 
+					 * expression is say: 7 - 8 +
 					 */
 					if(element.equals("-")) {
-						operand2 = -1;
+						operand1 = -1;
 						element = "*";
 					}
 					else
-						throw new ExpressionError("Invalid prefix expression: \""+exp+"\"");
+						throw new ExpressionError("Invalid postfix expression: \""+exp+"\"");
 				}
 				else
-					operand2 = stack.pop();
+					operand1 = stack.pop();
 				
 				boolean isOperand1_Valid, isOperand2_Valid;
 				isOperand1_Valid = MathExpressionUtilities.isOperand(""+operand1);
@@ -292,9 +236,9 @@ public class InfixToPrefixConvertor {
 				
 				if(!isOperand1_Valid || !isOperand2_Valid) {
 					if(!isOperand2_Valid)
-						throw new ExpressionError("Invalid prefix expression: Found "+operand2+" at index: "+(idx-1)+" in the expression: \""+exp+"\"");
+						throw new ExpressionError("Invalid postfix expression: Found "+operand2+" at index: "+(idx-1)+" in the expression: \""+exp+"\"");
 					else if(!isOperand1_Valid)
-						throw new ExpressionError("Invalid prefix expression: Found "+operand1+" at index: "+(idx-2)+" in the expression: \""+exp+"\"");
+						throw new ExpressionError("Invalid postfix expression: Found "+operand1+" at index: "+(idx-2)+" in the expression: \""+exp+"\"");
 				}
 				
 				result = MathExpressionUtilities.solveBinaryExpression(operand1, operand2, element);
@@ -302,30 +246,31 @@ public class InfixToPrefixConvertor {
 				stack.push(result);
 			}
 			else {
-				throw new ExpressionError("Invalid prefix expression: \""+exp+"\"");
+				throw new ExpressionError("Invalid postfix expression: \""+exp+"\"");
 			}
 			idx++;
 		}
 		
-		/*Here we check the validity of prefix expression. If even after 
+		/*Here we check the validity of postfix expression. If even after 
 		 * scanning the entire expression the stack is not empty this means
-		 * the prefix expression is wrong.
+		 * the postfix expression is wrong.
 		 */
 		if(stack.size() > 1 || stack.empty())
-			throw new ExpressionError("Invalid prefix expression: \""+exp+"\"");
+			throw new ExpressionError("Invalid postfix expression: \""+exp+"\"");
 		
 		return stack.pop();
 	}
 
 	public static void main(String[] args) {
-		String exp = "a/b*(c+d)/e/f*g-h";
-		// A+(B+C*D-(H-I/J))*E/F+G
-		// K+L-M*N+(O^P)*W/U/V*T+Q
 		
-		InfixToPrefixConvertor ipc = new InfixToPrefixConvertor();
+		String exp = "((((K+L)-(M*N))+(((((O^P)*W)/U)/V)*T))+Q)";
+		//4 9 5 * 15 - 2 3 ^ / +
+		//4+(9*5-15)/2^3
+		// A+C/B*D/E (A*B+C*D) (A+B/C*D^E) A+(B+C*D-(H-I/J))*E/F+G
+		InfixToPostfixConvertor itpo = new InfixToPostfixConvertor();
+		System.out.println(itpo.covertInfixToPostfix(exp));
 		
-		System.out.println(ipc.covertInfixToPrefix(exp));
-//		System.out.println(ipc.solvePrefix(exp));
+//		System.out.println(itpo.solvePostfix(exp));
 
 	}
 

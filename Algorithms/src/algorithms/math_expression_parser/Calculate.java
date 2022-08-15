@@ -1,4 +1,4 @@
-package alogorithms.math_expression_parser;
+package algorithms.math_expression_parser;
 
 public interface Calculate {
 	

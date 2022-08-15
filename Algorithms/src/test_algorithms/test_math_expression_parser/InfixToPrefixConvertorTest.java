@@ -3,8 +3,8 @@ package test_algorithms.test_math_expression_parser;
 import org.junit.Assert;
 import org.junit.Test;
 
-import alogorithms.math_expression_parser.InfixToPostfixConvertor;
-import alogorithms.math_expression_parser.InfixToPrefixConvertor;
+import algorithms.math_expression_parser.InfixToPostfixConvertor;
+import algorithms.math_expression_parser.InfixToPrefixConvertor;
 
 public class InfixToPrefixConvertorTest {
 	

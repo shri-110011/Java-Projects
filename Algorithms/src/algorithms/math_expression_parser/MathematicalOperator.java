@@ -1,8 +1,8 @@
-package alogorithms.math_expression_parser;
+package algorithms.math_expression_parser;
 
 import java.util.HashMap;
 
-import alogorithms.math_expression_parser.OperatorProperties.Associativity;
+import algorithms.math_expression_parser.OperatorProperties.Associativity;
 
 public class MathematicalOperator implements Comparable<MathematicalOperator> {
 	String op;
