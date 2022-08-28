@@ -1,133 +1,66 @@
 package algorithms.graph_algorithms;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 
-class Vertex {
-	private String name;
-	
-	public Vertex(String vertexName) {
-		name = vertexName;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String toString() {
-		return name;
-	}
-	
-}
-
-class Edge {
-	private int endPoint1, endPoint2;
-	
-	public Edge(int ep1, int ep2) {
-		endPoint1 = ep1;
-		endPoint2 = ep2;
-	}
-	
-	public int getEndpoint1() {
-		return endPoint1;
-	}
-	
-	public int getEndpoint2() {
-		return endPoint2;
-	}
-
-	public String toString() {
-		return "{"+endPoint1+" -- "+endPoint2+"}";
-	}
-	
-}
-
-public class Graph {
+abstract class Graph {
 	
 	private List<Vertex> vertices;
-	private List<Edge> edges;
 	
 	private int noOfVertices;
 	
-	public Graph() {
+	private int noOfVerticesLimit=-1;
+	
+	protected static int innerForLoopCountInBFS ,
+	whileLoopCountInBFS, forLoopCountInDFS;
+	
+	Graph() {
 		// Create a list of vertices.
 		vertices =  new ArrayList<Vertex>();
-		edges = new LinkedList<Edge>();
 	}
 	
-	private void addVertex(Vertex vertex) {
+	/* addVertex(Vertex vertex) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph. This is because we are checking for the 
+	 * uniqueness of the node/vertex.
+	 */
+	public void addVertex(Vertex vertex) {
 		if(!checkIfVertexExistInGraph(vertex.getName())) {
 			if(!vertex.getName().matches("[a-zA-Z][0-9a-zA-Z]*"))
-				throw new IllegalArgumentException("Invalid vertex name: "+vertex.getName()+", vertex name can only contain alphanumeric characters and first letter of it should be an alphabet.");
+				throw new InvalidVertexNameException(vertex.getName());
+			if(noOfVertices == noOfVerticesLimit)
+				throw new MaxLimitForVerticesReachedException(vertex.getName(), noOfVerticesLimit);
 			vertices.add(vertex);
 			// Update the noOfVertices in this graph.
 			noOfVertices++;
 		}
 		else {
-			throw new IllegalArgumentException("Duplicate vertex with name "+vertex.getName()+" provided."); 
+			throw new DuplicateVertexException(vertex.getName());
 		}
 	}
 	
-	private void addVertex(String vertexName) {
+	/* addVertex(String vertexName) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph.
+	 */
+	public void addVertex(String vertexName) {
 		Vertex vertex = new Vertex(vertexName);
 		addVertex(vertex);
 	}
 	
-	private void addVertices(List<Vertex> verticesList) {
+	/* addVertices(List<Vertex> verticesList) has a time complexity of O(size*|V|) where |V| represents 
+	 * the number of vertices in the graph and size is the number of vertices in verticesList.
+	 */
+	public void addVertices(List<Vertex> verticesList) {
 		for(Vertex vertex: verticesList)
 			addVertex(vertex);
 	}
 	
-	private void addEdge(Edge connection) {
-		edges.add(connection);
-	}
-	
-	private void addEdge(String vertexName1, String vertexName2) {
-		if(!checkIfVertexExistInGraph(vertexName1))
-			throw new IllegalArgumentException("vertexName1: \""+vertexName1+"\" does not exist in the graph.");
-		if(!checkIfVertexExistInGraph(vertexName2))
-			throw new IllegalArgumentException("vertexName2: \""+vertexName2+"\" does not exist in the graph.");
-		
-		Edge edge = new Edge(getVertexIndex(vertexName1), getVertexIndex(vertexName2));
-		addEdge(edge);
-	}
-	
-	private void addEdges(List<Edge> connections) {
-		edges.addAll(connections);
-	}
-	
-	private int getVertexIndex(Vertex vertex) {
-		return vertices.indexOf(vertex);
-	}
-	
-	private int getVertexIndex(String vertexName) {
-		Vertex vertex = null;
-		boolean vertexFound = false;
-		for(int i=0; i<noOfVertices; i++) {
-			vertex = vertices.get(i);
-			if(vertex.getName().equals(vertexName)) {
-				vertexFound = true;
-				break;
-			}
-		}
-		if(!vertexFound) return -1;
-		else return getVertexIndex(vertex);
-	}
-	
-	private boolean checkIfVertexExistInGraph(String vertexName) {
-		if(getVertexIndex(vertexName) != -1) return true;
-		else return false;
-	}
-	
-	/* createGraph(String verticesNames[], String  connections[]) will
-	 * create an undirected graph.
-	 * 
-	 * Note: Here  we use a ArrayList to store the vertices in our 
-	 * graph and a LinkedList to store the connection b/w vertices.
+	/* addVertices(String verticesNames[]) has a time complexity of O(size*|V|) where |V| represents 
+	 * the number of vertices in the graph and size is the number of vertices in verticesNames.
 	 */
-	public void createGraph(String verticesNames[], String  connections[]) {
-	
+	public void addVertices(String verticesNames[]) {
 		/* Create vertex for each vertexName in verticesNames[] 
 		 * and add that to the vertices list.
 		 */
@@ -135,63 +68,177 @@ public class Graph {
 		int count = 0;
 		for(String name: verticesNames) {
 			if(!checkIfVertexExistInGraph(name)) {
+				if(!name.matches("[a-zA-Z][0-9a-zA-Z]*"))
+					throw new InvalidVertexNameException(name, count);
+				if(noOfVertices == noOfVerticesLimit)
+					throw new MaxLimitForVerticesReachedException(name, noOfVerticesLimit, count);
 				vertices.add(new Vertex(name));
 				// Update the noOfVertices in this graph.
 				noOfVertices++;
 			}
 			else {
-				throw new IllegalArgumentException("Found duplicate vertex \""+name+"\" in verticesNames["+count+"]."); 
+				throw new DuplicateVertexException(name, count);
 			}
 			count++;
 		}
-		
-		/* Create edge for each connection in connections[] 
-		 * and add that to the edges list.
-		 */
-		for(int i=0; i<connections.length; i++) {
-			String endPoints[] = connections[i].split(" ");
-			
-			if(endPoints.length == 2) {
-				for(String endpoint: endPoints) {
-					// Here we check if vertex name is valid.
-					if(!endpoint.matches("[a-zA-Z][0-9a-zA-Z]*")) {
-						throw new IllegalArgumentException("Invalid vertex name: \""+endpoint+"\" at connections["+i+"], vertex name can only contain alphanumeric characters and first letter of it should be an alphabet.");
-					}
-					else {
-						if(!checkIfVertexExistInGraph(endpoint)) {
-							throw new IllegalArgumentException("Vertex with name: \""+endpoint+"\" in the connection \""+connections[i]+"\" at connections["+i+"] does not exist in the graph.");
-						}
-					}
-				}
-				edges.add(new Edge(getVertexIndex(endPoints[0]), getVertexIndex(endPoints[1])) );
+	}
+	
+	/* getVertexIndex(Vertex vertex) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph.
+	 */
+	public int getVertexIndex(Vertex vertex) {
+		return vertices.indexOf(vertex);
+	}
+	
+	/* getVertexIndex(String vertexName) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph.
+	 */
+	public int getVertexIndex(String vertexName) {
+		boolean vertexFound = false;
+		int count = 0;
+		for(Vertex vertex: vertices) {
+			if(vertex.getName().equals(vertexName)) {
+				vertexFound = true;
+				break;
 			}
-			else {
-				throw new IllegalArgumentException("Invalid connection: \""+connections[i]+"\" at connections["+i+"].");
-			}
-			
-			
+			count++;
 		}
+		if(!vertexFound) return -1;
+		else return count;
 	}
 	
-	
-
-	public static void main(String[] args) {
-		// Create a list of Vertices.
-		String vertices[] = {"A", "B", "C", "D"};
-		String edges[]= {"A $ B", "A C", "B D"};
-		
-		
-		
-		Graph graph = new Graph();
-		
-		graph.createGraph(vertices, edges);
-		System.out.println("Edges: "+graph.edges);
-		
-		graph.addVertex("E");
-		graph.addEdge("C", "E");
-		System.out.println("Edges: "+graph.edges);
-		
-		
+	/* checkIfVertexExistInGraph(String vertexName) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph.
+	 */
+	public boolean checkIfVertexExistInGraph(String vertexName) {
+		if(getVertexIndex(vertexName) != -1) return true;
+		else return false;
 	}
+	
+	// checkIfVertexExistInGraph(int idx) has a time complexity of O(1).
+	public boolean checkIfVertexExistInGraph(int idx) {
+		if(idx >=0 && idx < noOfVertices) return true;
+		else return false;
+	}
+	
+	public int getNoOfVertices() {
+		return noOfVertices;
+	}
+	
+	// getVertex(int idx) has O(1) time complexity.
+	public Vertex getVertex(int idx) {
+		return vertices.get(idx);
+	}
+	
+	public List<Vertex> getVertices() {
+		return vertices;
+	}
+	
+	public void setNoOfVerticesLimit(int noOfVerticesLimit) {
+		this.noOfVerticesLimit = noOfVerticesLimit;
+	}
+	
+	/* removeVertex(int idx) has a time complexity of O(|V|) where |V| represents 
+	 * the number of vertices in the graph.
+	 */
+	public boolean removeVertex(int idx) {
+		// Remove this vertex having index idx from the vertices list.
+		if(idx >= 0 && idx < noOfVertices) {
+			vertices.remove(idx);
+			// Update the noOfVertices.
+			noOfVertices--;
+			return true;
+		}
+		return false;
+	}
+	
+	public void checkIfEdgeIsValid(int i, int j) {
+		// Check if i and j are valid indices for the vertices.
+		int noOfVertices = getNoOfVertices();
+		if(!(i >= 0 && i < noOfVertices))
+			throw new InvalidEdgeException(i, "endPoint1");
+		if(!(j >= 0 && j < noOfVertices))
+			throw new InvalidEdgeException(j, "endPoint2");
+	}
+	
+	public ArrayList<Integer> performBFS(int startNodeIdx) {
+		Queue<Integer> queue = new ArrayDeque<>();
+		int noOfVertices = getNoOfVertices();
+		boolean visitedNodes[] = new boolean[noOfVertices];
+		ArrayList<Integer> bfsResult = new ArrayList<>();
+		int componentCount = 0;
+		
+		if(startNodeIdx >=0 && startNodeIdx<noOfVertices) {
+			for(int i=startNodeIdx; i<noOfVertices+startNodeIdx; i++) {
+				int nodeIdx = i%noOfVertices;
+				if(!visitedNodes[nodeIdx]) {
+					getBFSResult(nodeIdx, queue, visitedNodes, bfsResult);
+					componentCount++;
+					System.out.println("For component: "+componentCount);
+					System.out.println("whileLoopCountInBFS: "+whileLoopCountInBFS);
+					System.out.println("innerForLoopCountInBFS: "+innerForLoopCountInBFS);
+					System.out.println("#BFS result: "+bfsResult);
+				}
+			}
+		}
+		else {
+			throw new InvalidVertexIndexException(noOfVertices, startNodeIdx);
+		}
+		return bfsResult;
+	}
+	
+	public ArrayList<Integer> performDFS(int startNodeIdx) {
+		Stack<Integer> stack = new Stack<>();
+		int noOfVertices = getNoOfVertices();
+		boolean visitedNodes[] = new boolean[noOfVertices];
+		ArrayList<Integer> dfsResult = new ArrayList<>();
+		int componentCount = 0;
+		
+		if(startNodeIdx >=0 && startNodeIdx<noOfVertices) {
+			/* Note we need to have a for loop traversing through all the 
+			 * vertices because the graph may be disconnected in which case
+			 * it will have components. So if we start DFS from a vertex 
+			 * which is in one of the components, then a DFS call with that
+			 * nodeIdx from this for loop will result in coverage of all
+			 * the nodes in that component only.
+			 * Hence to cover all the components we need this for loop
+			 * traversing through all the vertices.
+			 */
+			for(int i=startNodeIdx; i<noOfVertices+startNodeIdx; i++) {
+				int nodeIdx = i%noOfVertices;
+				if(!visitedNodes[nodeIdx]) {
+					getDFSResult(nodeIdx, stack, visitedNodes, dfsResult);
+					componentCount++;
+					System.out.println("For component: "+componentCount);
+					System.out.println("forLoopCountInDFS: "+forLoopCountInDFS);
+					System.out.println("#DFS result: "+dfsResult);
+				}
+			}
+		}
+		else {
+			throw new InvalidVertexIndexException(noOfVertices, startNodeIdx);
+		}
+		return dfsResult;
+	}
+	
+	/* createGraph(String verticesNames[], String  connections[]) will
+	 * create an undirected graph.
+	 * 
+	 * Note: Here we use a ArrayList to store the vertices in our 
+	 * graph and the data structure to store the connection b/w 
+	 * vertices depends on the type of graph representation we are
+	 * using.
+	 */
+	abstract public void createGraph(String verticesNames[], String  connections[]);
 
+	abstract public void addEdge(int idx1, int idx2);
+	
+	abstract public boolean removeEdge(int idx1, int idx2);
+	
+	abstract public ArrayList<Integer> getAdjacentNodes(int idx);
+	
+	abstract protected void getBFSResult(int curNodeIdx, Queue<Integer> queue, boolean visitedNodes[], ArrayList<Integer> bfsResult);
+	
+	abstract protected void getDFSResult(int curNodeIdx, Stack<Integer> queue, boolean visitedNodes[], ArrayList<Integer> bfsResult);
+	
 }

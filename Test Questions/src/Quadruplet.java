@@ -50,5 +50,7 @@ public class Quadruplet {
 		System.out.println("\n");
 		Quadruplet.findMaxProduct(arr, n);
 		
+		sc.close();
+		
 	}
 }

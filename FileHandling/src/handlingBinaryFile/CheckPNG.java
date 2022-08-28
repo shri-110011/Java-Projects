@@ -24,6 +24,8 @@ public class CheckPNG {
 		
 		
 		System.out.println("Is png file? "+isPNG);
+		
+		in.close();
 	
 	}
 

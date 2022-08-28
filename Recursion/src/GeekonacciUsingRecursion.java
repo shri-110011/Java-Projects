@@ -50,6 +50,7 @@ public class GeekonacciUsingRecursion {
 			n = sc.nextInt();
 			System.out.println(calcNthGeekonacci(a,b,c,n));
 		}
+		sc.close();
 	}
 }
 

@@ -14,7 +14,7 @@ class Node {
 	static int count = 0;
 	private boolean displayFlag = true;
 	
-	List<Integer> nodes = new ArrayList();
+	List<Integer> nodes = new ArrayList<>();
 	
 	public Node(int value) {
 		info = value;

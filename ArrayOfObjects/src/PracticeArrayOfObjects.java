@@ -88,6 +88,8 @@ public class PracticeArrayOfObjects {
 			System.out.println(student2[i].toString());
 		}
 		
+		sc.close();
+		
 	}
 	
 	public static Student[] SortStudents(Student[] students) {

@@ -108,6 +108,8 @@ public class PracticeArrayOfObjects2 {
 		
 		al1.add(new Employee1(empid, salary, name, role));
 		
+		sc.close();
+		
 	}
 	
 	public static void displayEmployDetails(ArrayList<Employee1> al1) {

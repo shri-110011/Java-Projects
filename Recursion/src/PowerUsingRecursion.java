@@ -14,12 +14,12 @@ public class PowerUsingRecursion {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		double num, pow;
 		Scanner sc = new Scanner(System.in);
 		num = sc.nextDouble();
 		pow = sc.nextDouble();
 		System.out.println(calPower(num, pow));
+		sc.close();
 	}
 
 }

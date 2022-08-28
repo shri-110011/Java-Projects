@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Marathon {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		ArrayList<Float> al1 = new ArrayList<Float>();
 		String str;
@@ -23,6 +22,7 @@ public class Marathon {
 				break;
 			}
 		}
+		sc.close();
 		Collections.sort(al1, Collections.reverseOrder());
 		//System.out.println(al1);
 		if(flag==0)

@@ -1,0 +1,67 @@
+/* For Graph using edge list getBFSResult() has a time complexity 
+	 * of O(|V|*(|E|+ 1) + 2*|E|) which is O(|V|*|E| + |V| + 2*|E|)
+	 * where |V| represents the number of vertices and |E| represents
+	 * the number of edges in the graph.
+	 * 
+	 * |E| is the time complexity for getAdjacentNodes(idx); and it is 
+	 * run |V| times.
+	 * 2*|E| is the total number of times the for loop runs until the
+	 * while loop finishes.
+	 * 1 is time taken by the statements having constant time.
+	 * 
+	 * For Graph using adjacency matrix getBFSResult() has a time 
+	 * complexity of O(|V|*(|V|+ 1) + 2*|E|) which is 
+	 * O(|V|^2 + |V| + 2*|E|) where |V| represents the number of 
+	 * vertices and |E| represents the number of edges in the graph.
+	 * 
+	 * |V| is the time complexity for getAdjacentNodes(idx); and it is 
+	 * run |V| times.
+	 * 2*|E| is the total number of times the for loop runs until the
+	 * while loop finishes.
+	 * 1 is time taken by the statements having constant time 
+	 * complexity in one iteration of the while loop.
+	 * 
+	 * 
+	 * For Graph using adjacency list getBFSResult() has a time 
+	 * complexity of O(|V|*|V| + 2*|E| + |V|)) which is 
+	 * O(|V|^2 + 2*|E| + |V|) where |V| represents the number of 
+	 * vertices and |E| represents the number of edges in the graph.
+	 * 
+	 * |V| is the time complexity for getAdjacentNodes(idx); and it is 
+	 * run |V| times.
+	 * 2*|E| is the total number of times the for loop runs until the
+	 * while loop finishes.
+	 * 1 is time taken by the statements having constant time 
+	 * complexity in one iteration of the while loop.
+	 * 
+	 * Note: We have not considered the time complexity of the 
+	 * bfsResult.add(visitedNodeIndex); because it is there just to 
+	 * collect the bfs result and its time complexity until the 
+	 * while loop ends is O(|V|*(|V|+1)/2).
+	 */
+	public ArrayList<Integer> getBFSResult() {
+		int noOfVertices = getNoOfVertices(), exploredNodesCount = 0;
+		boolean visitedVertices[] = new boolean[noOfVertices];
+		ArrayList<Integer> bfsResult = new ArrayList<>();
+		
+		Queue<Integer> queue = new ArrayDeque<>();
+		
+		if(noOfVertices > 0) {
+			queue.add(0);
+			visitedVertices[0] = true;
+			while(!queue.isEmpty() && exploredNodesCount < noOfVertices) {
+				int idx = queue.peek();
+				ArrayList<Integer> adjacentNodes = getAdjacentNodes(idx);
+				for(int i: adjacentNodes) {
+					if(!visitedVertices[i]) {
+						queue.add(i);
+						visitedVertices[i] = true;
+					}
+				}
+				int exploredNodeIndex = queue.remove();
+				bfsResult.add(exploredNodeIndex);
+				exploredNodesCount++;
+			}	
+		}
+		return bfsResult;
+	}
