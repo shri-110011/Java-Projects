@@ -2,11 +2,21 @@ package algorithms.graph_algorithms;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
-abstract class Graph {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import algorithms.graph_algorithms.graph_exceptions.DuplicateVertexException;
+import algorithms.graph_algorithms.graph_exceptions.InvalidEdgeException;
+import algorithms.graph_algorithms.graph_exceptions.InvalidVertexIndexException;
+import algorithms.graph_algorithms.graph_exceptions.InvalidVertexNameException;
+import algorithms.graph_algorithms.graph_exceptions.MaxLimitForVerticesReachedException;
+
+public abstract class Graph {
 	
 	private List<Vertex> vertices;
 	
@@ -14,12 +24,23 @@ abstract class Graph {
 	
 	private int noOfVerticesLimit=-1;
 	
-	protected static int innerForLoopCountInBFS ,
-	whileLoopCountInBFS, forLoopCountInDFS;
+	protected boolean isDirected;
+	
+	protected int innerForLoopCountInBFS ,
+	whileLoopCountInBFS, forLoopCountInDFS,
+	innerForLoopCountInBFSCycleChecker, whileLoopCountInBFSCycleChecker,
+	forLoopCountInDFSCycleChecker, innerForLoopCountInBFSBipartiteChecker
+	, whileLoopCountInBFSBipartiteChecker, forLoopCountInDFSBipartiteChecker;
+	
+	static final Logger log = LogManager.getLogger(Graph.class.getName());
 	
 	Graph() {
 		// Create a list of vertices.
 		vertices =  new ArrayList<Vertex>();
+	}
+	
+	public boolean isDirected() {
+		return isDirected;
 	}
 	
 	/* addVertex(Vertex vertex) has a time complexity of O(|V|) where |V| represents 
@@ -161,6 +182,26 @@ abstract class Graph {
 			throw new InvalidEdgeException(j, "endPoint2");
 	}
 	
+	public List<Vertex> getListOfVertexObjects(String verticesNames[]) {
+		ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+		
+		for(String vertexName: verticesNames) {
+			vertexList.add(new Vertex(vertexName));
+		}
+		
+		return vertexList;
+	}
+	
+	public List<Integer> getListOfVertexIndices(String verticesNames[]) {
+		ArrayList<Integer> vertexList = new ArrayList<>();
+		
+		for(String vertexName: verticesNames) {
+			vertexList.add(getVertexIndex(vertexName));
+		}
+		
+		return vertexList;
+	}
+	
 	public ArrayList<Integer> performBFS(int startNodeIdx) {
 		Queue<Integer> queue = new ArrayDeque<>();
 		int noOfVertices = getNoOfVertices();
@@ -174,10 +215,10 @@ abstract class Graph {
 				if(!visitedNodes[nodeIdx]) {
 					getBFSResult(nodeIdx, queue, visitedNodes, bfsResult);
 					componentCount++;
-					System.out.println("For component: "+componentCount);
-					System.out.println("whileLoopCountInBFS: "+whileLoopCountInBFS);
-					System.out.println("innerForLoopCountInBFS: "+innerForLoopCountInBFS);
-					System.out.println("#BFS result: "+bfsResult);
+					log.info("For component: "+componentCount);
+					log.debug("whileLoopCountInBFS: "+whileLoopCountInBFS);
+					log.debug("innerForLoopCountInBFS: "+innerForLoopCountInBFS);
+//					log.debug("#BFS result: "+bfsResult);
 				}
 			}
 		}
@@ -185,6 +226,10 @@ abstract class Graph {
 			throw new InvalidVertexIndexException(noOfVertices, startNodeIdx);
 		}
 		return bfsResult;
+	}
+	
+	public ArrayList<Integer> performBFS() {
+		return performBFS(0);
 	}
 	
 	public ArrayList<Integer> performDFS(int startNodeIdx) {
@@ -209,9 +254,9 @@ abstract class Graph {
 				if(!visitedNodes[nodeIdx]) {
 					getDFSResult(nodeIdx, stack, visitedNodes, dfsResult);
 					componentCount++;
-					System.out.println("For component: "+componentCount);
-					System.out.println("forLoopCountInDFS: "+forLoopCountInDFS);
-					System.out.println("#DFS result: "+dfsResult);
+					log.info("For component: "+componentCount);
+					log.debug("forLoopCountInDFS: "+forLoopCountInDFS);
+//					log.debug("#DFS result: "+dfsResult);
 				}
 			}
 		}
@@ -219,6 +264,110 @@ abstract class Graph {
 			throw new InvalidVertexIndexException(noOfVertices, startNodeIdx);
 		}
 		return dfsResult;
+	}
+	
+	public ArrayList<Integer> performDFS() {
+		return performDFS(0);
+	}
+	
+	public boolean cycleCheckUsingBFS() {
+		
+		Queue<Integer[]> queue = new ArrayDeque<>();
+		int noOfVertices = getNoOfVertices();
+		boolean visitedNodes[] = new boolean[noOfVertices];
+		int componentCount = 0;
+		
+		for(int i=0; i<noOfVertices; i++) {
+			if(!visitedNodes[i]) {
+				componentCount++;
+				if(cycleCheckerUsingBFS(i, -1, queue, visitedNodes)) {
+					log.info("For component: "+componentCount);
+					log.debug("whileLoopCountInBFSCycleChecker: "+whileLoopCountInBFSCycleChecker);
+					log.debug("innerForLoopCountInBFSCycleChecker: "+innerForLoopCountInBFSCycleChecker);
+					return true;
+				}
+				log.info("For component: "+componentCount);
+				log.debug("whileLoopCountInBFSCycleChecker: "+whileLoopCountInBFSCycleChecker);
+				log.debug("innerForLoopCountInBFSCycleChecker: "+innerForLoopCountInBFSCycleChecker);
+			}
+		}
+		return false;
+	}
+	
+	public boolean cycleCheckUsingDFS() {
+		
+		Stack<Integer []> stack = new Stack<>();
+		int noOfVertices = getNoOfVertices();
+		boolean visitedNodes[] = new boolean[noOfVertices];
+		int componentCount = 0;
+		
+		log.info("noOfVertices: "+noOfVertices);
+		for(int i=0; i<noOfVertices; i++) {
+			if(!visitedNodes[i]) {
+				if(cycleCheckerUsingDFS(i, -1, stack, visitedNodes)) {
+					componentCount++;
+					log.info("For component: "+componentCount);
+					log.debug("forLoopCountInDFSCycleChecker: "+forLoopCountInDFSCycleChecker);
+					return true;
+				}
+				componentCount++;
+				log.info("For component: "+componentCount);
+				log.debug("forLoopCountInDFSCycleChecker: "+forLoopCountInDFSCycleChecker);
+			}
+		}
+		return false;
+	}
+	
+	public boolean bipartiteCheckUsingBFS() {
+		
+		Queue<Integer[]> queue = new ArrayDeque<>();
+		int noOfVertices = getNoOfVertices();
+		int nodesColor[] = new int[noOfVertices];
+		Arrays.fill(nodesColor, 0);
+		int componentCount = 0;
+		
+		for(int i=0; i<noOfVertices; i++) {
+			if(nodesColor[i]==0) {
+				componentCount++;
+				if(!bipartiteCheckerUsingBFS(i, -1, queue, nodesColor)) {
+					log.info("For component: "+componentCount);
+					log.debug("whileLoopCountInBFSBipartiteChecker: "+whileLoopCountInBFSBipartiteChecker);
+					log.debug("innerForLoopCountInBFSBipartiteChecker: "+innerForLoopCountInBFSBipartiteChecker);
+					return false;
+				}
+				else {
+					log.info("For component: "+componentCount);
+					log.debug("whileLoopCountInBFSBipartiteChecker: "+whileLoopCountInBFSBipartiteChecker);
+					log.debug("innerForLoopCountInBFSBipartiteChecker: "+innerForLoopCountInBFSBipartiteChecker);
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean bipartiteCheckUsingDFS() {
+		
+		Stack<Integer[]> stack = new Stack<>();
+		int noOfVertices = getNoOfVertices();
+		int nodesColor[] = new int[noOfVertices];
+		Arrays.fill(nodesColor, 0);
+		int componentCount = 0;
+		
+		for(int i=0; i<noOfVertices; i++) {
+			if(nodesColor[i]==0) {
+				componentCount++;
+				if(!bipartiteCheckerUsingDFS(i, -1, stack, nodesColor)) {
+					log.info("For component: "+componentCount);
+					log.debug("forLoopCountInDFSBipartiteChecker: "+forLoopCountInDFSBipartiteChecker);
+					return false;
+				}
+				else {
+					log.info("For component: "+componentCount);
+					log.debug("forLoopCountInDFSBipartiteChecker: "+forLoopCountInDFSBipartiteChecker);
+				}
+			}
+		}
+		return true;
 	}
 	
 	/* createGraph(String verticesNames[], String  connections[]) will
@@ -231,14 +380,28 @@ abstract class Graph {
 	 */
 	abstract public void createGraph(String verticesNames[], String  connections[]);
 
+	abstract public void printGraph();
+	
 	abstract public void addEdge(int idx1, int idx2);
 	
+	abstract public void addEdges(String connections[]);
+	
 	abstract public boolean removeEdge(int idx1, int idx2);
+	
+	abstract public boolean checkIfEdgeExistInGraph(int endPoint1, int endPoint2);
 	
 	abstract public ArrayList<Integer> getAdjacentNodes(int idx);
 	
 	abstract protected void getBFSResult(int curNodeIdx, Queue<Integer> queue, boolean visitedNodes[], ArrayList<Integer> bfsResult);
 	
 	abstract protected void getDFSResult(int curNodeIdx, Stack<Integer> queue, boolean visitedNodes[], ArrayList<Integer> bfsResult);
+	
+	abstract protected boolean cycleCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, boolean visitedNodes[]);
+	
+	abstract protected boolean cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[]);
+	
+	abstract protected boolean bipartiteCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, int nodesColor[]);
+	
+	abstract protected boolean bipartiteCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, int nodesColor[]);
 	
 }

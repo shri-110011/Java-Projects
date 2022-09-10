@@ -1,0 +1,123 @@
+Graph 1:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G", "H", "I"}
+{
+	"B A", "C A", "D A", "C B", "B D", "C D", "C E", "D H",
+	"E F", "E G", "F I", "G H", "G I", "H I"
+}
+BFS result: {"A", "B", "C", "D", "H", "F", "G", "I"}
+DFS result: {"A", "B", "C", "H", "G", "D", "F", "I"}
+
+Graph 2:
+Undirected
+{"A", "B", "C", "D"}
+{
+	"A B", "A D", "D B", "D C" 
+}
+BFS result: {"A", "B", "C", "D"}
+DFS result: {"A", "B", "D", "C"}
+
+Graph 3:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G", "H"}
+{
+	"B A", "C A", "D A", "C B", "B D", "C D", "C F", "F E",
+	"E G", "F G", "F H", "G H", "H E"
+}
+BFS result: {"A", "B", "C", "D", "F", "E", "G", "H"}
+DFS result: {"A", "B", "C", "D", "F", "E", "G", "H"}
+
+Graph 4:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G"}
+{
+	"A B", "D A", "B D", "A C", "C D", "E F", "F G", "E G"
+}
+BFS result: {"A", "B", "C", "D", "E", "F", "G"}
+DFS result: {"A", "B", "D", "C", "E", "F", "G"}
+
+
+Graph 5:
+Directed
+{"A", "B", "C", "D", "E", "F", "G", "H", "I"}
+{
+	"A C", "A D", "B A", "D B", "D C", "C E", "E F", "G E", "G I", "F I", "H I", "G H", "H D"
+}
+BFS result: {"A", "C", "D", "E", "B", "F", "I", "G", "H"}
+DFS result: {"A", "C", "E", "F", "I", "D", "B", "G", "H"}
+
+Graph 6:
+Directed
+{"A", "B", "C", "D", "E", "F", "G", "H"}
+{
+	"A C", "A D", "B A", "D B", "D C", "C B", "F C", "E G", "G H", "H F", "F E", "F G"
+}
+BFS result: {"A", "C", "D", "B", "E", "G", "H", "F"}
+DFS result:{"A", "C", "B", "D", "E", "G", "H", "F"}
+
+Graph 7:
+Directed
+{"A", "B", "C", "D", "E", "F", "G"}
+{
+	"A C", "C D", "D B", "B A", "E G", "F G", "F E"
+}
+BFS result: {"A", "C", "D", "B", "E", "G", "F"}
+DFS result: {"A", "C", "D", "B", "E", "G", "F"}
+
+Graph 8:
+Directed
+{"A", "B", "C", "D"}
+{
+	"A B", "D B", "C D", "C A"
+}
+BFS result: {"A", "B", "C", "D"}
+DFS result: {"A", "B", "C", "D"}
+
+Graph 9:
+Undirected
+{"A", "B", "C", "D", "E"}
+{"A B", "D A", "E B", "C D", "D E"}
+Cycle is present
+
+Graph 10:
+Undirected
+{"A", "B", "C", "D", "E", "F"}
+{"A B", "D A", "C B", "E D", "E F"}
+Cycle is not present
+
+Graph 11:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G"}
+{"A B", "C B", "C D", "D E", "F E", "C G"}
+Cycle is not present
+
+Graph 12:
+Directed
+{"A", "B", "C", "D", "E"}
+{"A B", "B C", "E A", "C D", "C E"}
+Cycle is present
+
+Graph 13:
+Directed
+{"A", "B", "C", "D", "E", "F"}
+{"B C", "C D", "D F", "E D", "E A", "A B"}
+Cycle is not present
+
+Graph 14:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G"}
+{"A B", "C B", "C D", "D E", "F E", "C G"}
+Bipartite
+
+Graph 14:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G"}
+{"A B", "C B", "C D", "D E", "F E", "C G", "E A"}
+Bipartite
+
+Graph 14:
+Undirected
+{"A", "B", "C", "D", "E", "F", "G"}
+{"A B", "C B", "C D", "D E", "F E", "C G", "F A}
+Not Bipartite
+

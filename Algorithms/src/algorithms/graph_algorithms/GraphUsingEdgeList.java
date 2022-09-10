@@ -7,16 +7,28 @@ import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import algorithms.graph_algorithms.graph_exceptions.DuplicateEdgeException;
+import algorithms.graph_algorithms.graph_exceptions.InvalidEdgeFormatException;
+import algorithms.graph_algorithms.graph_exceptions.InvalidVertexNameException;
+import algorithms.graph_algorithms.graph_exceptions.VertexNotExistException;
+
 public class GraphUsingEdgeList extends Graph {
 	private List<Edge> edges;
 	
-	private boolean isDirected;
+	static final Logger log = LogManager.getLogger(GraphUsingEdgeList.class.getName());
 	
 	public GraphUsingEdgeList() {
 		edges = new LinkedList<Edge>();
-//		this.isDirected = isDirected;
 	}
 	
+	public GraphUsingEdgeList(GraphType gt) {
+		edges = new LinkedList<Edge>();
+		if(gt.equals(GraphType.DIRECTED))
+			isDirected = true;
+	}
 	
 	/* addEdge(int i, int j) has a time complexity of O(|E|) where |E| represents 
 	 * the number of edges in the graph.
@@ -26,9 +38,15 @@ public class GraphUsingEdgeList extends Graph {
 		
 		checkIfEdgeIsValid(i, j);
 
-		if(checkIfEdgeExistInGraph(i, j))
-			throw new DuplicateEdgeException(i, j);
+		if(checkIfEdgeExistInGraph(i, j)) {
+			throw new DuplicateEdgeException(i, j, isDirected);
+		}
+			
 		Edge edge = new Edge(i, j);
+		
+		if(isDirected)
+			edge.setDirected(true);
+		
 		edges.add(edge);
 	}
 	
@@ -37,11 +55,14 @@ public class GraphUsingEdgeList extends Graph {
 	 * Note: edges is a linked list.
 	 */
 	public void addEdge(Edge connection) {
-		int i = connection.getEndpoint1(), j = connection.getEndpoint2();
+		int i = connection.getEndPoint1(), j = connection.getEndPoint2();
 		checkIfEdgeIsValid(i, j);
-		
+
 		if(checkIfEdgeExistInGraph(i, j))
-			throw new DuplicateEdgeException(i, j);
+			throw new DuplicateEdgeException(i, j, isDirected);
+		
+		if(isDirected)
+			connection.setDirected(true);
 		
 		edges.add(connection);
 	}
@@ -67,7 +88,7 @@ public class GraphUsingEdgeList extends Graph {
 	 * Note: edges is a linked list.
 	 */
 	public void addEdges(List<Edge> connections) {
-		for(Edge edge: edges) {
+		for(Edge edge: connections) {
 			addEdge(edge);
 		}
 	}
@@ -101,10 +122,13 @@ public class GraphUsingEdgeList extends Graph {
 				// Here check if the edge is already present in the graph.
 				int idx1 = getVertexIndex(endPoints[0]), idx2 = getVertexIndex(endPoints[1]);
 				if(!checkIfEdgeExistInGraph(idx1, idx2)) {
-					edges.add(new Edge(idx1, idx2));
+					Edge edge = new Edge(idx1, idx2);
+					if(isDirected)
+						edge.setDirected(true);
+					edges.add(edge);
 				}
 				else {
-					throw new DuplicateEdgeException(idx1, idx2, i);
+					throw new DuplicateEdgeException(idx1, idx2, i, isDirected);
 				}
 			}
 			else {
@@ -118,7 +142,18 @@ public class GraphUsingEdgeList extends Graph {
 	 */
 	public boolean checkIfEdgeExistInGraph(int endPoint1, int endPoint2) {
 		for(Edge e: edges) {
-			if(e.getEndpoint1() == endPoint1 && e.getEndpoint2() == endPoint2) return true;
+			/* In case of directed graph we need to maintain the 
+			 * order of the endPoints i.e. endPoint1 refers to the 
+			 * start/source vertex and endPoint2 refers to the 
+			 * end/destination vertex.
+			 */
+			if(isDirected) {
+				if(e.getEndPoint1() == endPoint1 && e.getEndPoint2() == endPoint2) return true;
+			}
+			else {
+				if(e.getEndPoint1() == endPoint1 && e.getEndPoint2() == endPoint2) return true;
+				else if(e.getEndPoint2() == endPoint1 && e.getEndPoint1() == endPoint2) return true;
+			}
 		}
 		return false;
 	}
@@ -143,19 +178,35 @@ public class GraphUsingEdgeList extends Graph {
 		addEdges(connections);
 	}
 	
-	/* removeVertex(int idx) has a time complexity of O(|V|+|E|) where |V| represents 
-	 * the number of vertices in the graph.
+	/* removeVertex(int idx) has a time complexity of O(|V|+|E| +1 ) 
+	 * where |V| represents the number of vertices and |E| represents
+	 * the number of edges in the graph.
 	 */
 	@Override
 	public boolean removeVertex(int idx) {
-		/* Remove all the edges from the edges list that contain this vertex 
-		 * as an endpoint.
-		 */
 		ListIterator<Edge> li = edges.listIterator();
 		while(li.hasNext()) {
 			Edge edge = (Edge)li.next();
-			if(edge.getEndpoint1() == idx || edge.getEndpoint2() == idx) {
+			int endPoint1 = edge.getEndPoint1() , endPoint2 = edge.getEndPoint2();
+			
+			/* Remove all the edges from the edges list that contain 
+			 * this vertex as an endPoint.
+			 */
+			if(edge.getEndPoint1() == idx || edge.getEndPoint2() == idx) {
 				li.remove();
+			}
+			else {
+				/* For nodes having index greater than the index of the 
+				 * node to be removed we need to adjust their index i.e.
+				 * we have to decrement their index by 1.
+				 * 
+				 */
+				if(endPoint1 > idx) {
+					edge.setEndPoint1(endPoint1-1);
+				}
+				if(endPoint2 > idx) {
+					edge.setEndPoint2(endPoint2-1);
+				}
 			}
 		}
 		
@@ -170,10 +221,25 @@ public class GraphUsingEdgeList extends Graph {
 	public boolean removeEdge(int idx1, int idx2) {
 		boolean flag = false;
 		for(Edge edge: edges) {
-			if(edge.getEndpoint1() == idx1 && edge.getEndpoint2() == idx2) {
+			/* For directed graph only one way checking would be 
+			 * there i.e. the endPoint1 would correspond to idx1 and
+			 * endPoint2 to idx2.
+			 * 
+			 * And for undirected graph two way checking would be 
+			 * there.
+			 * 
+			 */
+			if(edge.getEndPoint1() == idx1 && edge.getEndPoint2() == idx2) {
 				edges.remove(edge);
 				flag = true;
 				break;
+			}
+			if(!isDirected) {
+				if(edge.getEndPoint1() == idx2 && edge.getEndPoint2() == idx1) {
+					edges.remove(edge);
+					flag = true;
+					break;
+				}
 			}
 		}
 		if(flag) return true;
@@ -187,18 +253,21 @@ public class GraphUsingEdgeList extends Graph {
 	public ArrayList<Integer> getAdjacentNodes(int idx) {
 		ArrayList<Integer> adjacentNodes = new ArrayList<>();
 		for(Edge edge: edges) {
-			if(edge.getEndpoint1() == idx) {
-				adjacentNodes.add(edge.getEndpoint2());
+			if(edge.getEndPoint1() == idx) {
+				adjacentNodes.add(edge.getEndPoint2());
 			}
-			else if(edge.getEndpoint2() == idx) {
-				adjacentNodes.add(edge.getEndpoint1());
+			if(!isDirected) {
+				if(edge.getEndPoint2() == idx) {
+					adjacentNodes.add(edge.getEndPoint1());
+				}
 			}
 		}
 		return adjacentNodes;
 	}
 	
-	public ArrayList<Integer> performBFS() {
-		return performBFS(0);
+	public void printGraph() {
+		log.info("Printing the edge list ...");
+		log.info(edges);
 	}
 	
 	/* For Graph using edge list getBFSResult() has a time complexity 
@@ -222,18 +291,20 @@ public class GraphUsingEdgeList extends Graph {
 		while(!queue.isEmpty()) {
 			int source_idx = queue.peek();
 			for(Edge e: edges) {
-				if(e.getEndpoint1() == source_idx) {
-					int destination_idx = e.getEndpoint2();
+				if(e.getEndPoint1() == source_idx) {
+					int destination_idx = e.getEndPoint2();
 					if(!visitedNodes[destination_idx]) {
 						queue.add(destination_idx);
 						visitedNodes[destination_idx] = true;
 					}
 				}
-				else if(e.getEndpoint2() == source_idx) {
-					int destination_idx = e.getEndpoint1();
-					if(!visitedNodes[destination_idx]) {
-						queue.add(destination_idx);
-						visitedNodes[destination_idx] = true;
+				if(!isDirected) {
+					if(e.getEndPoint2() == source_idx) {
+						int destination_idx = e.getEndPoint1();
+						if(!visitedNodes[destination_idx]) {
+							queue.add(destination_idx);
+							visitedNodes[destination_idx] = true;
+						}
 					}
 				}
 				innerForLoopCountInBFS++;
@@ -242,12 +313,6 @@ public class GraphUsingEdgeList extends Graph {
 			bfsResult.add(queue.remove());
 		}
 	}
-	
-	public ArrayList<Integer> performDFS() {
-		return performDFS(0);
-	}
-	
-	
 	
 	/* The for loop in 
 	 * getDFSResult(int curNodeIdx, Stack<Integer> stack, boolean visitedNodes[], ArrayList<Integer> dfsResult) {}
@@ -285,6 +350,7 @@ public class GraphUsingEdgeList extends Graph {
 	 */
 	@Override
 	protected void getDFSResult(int curNodeIdx, Stack<Integer> stack, boolean visitedNodes[], ArrayList<Integer> dfsResult) {	
+		forLoopCountInDFS++;
 		if(!visitedNodes[curNodeIdx]) {
 			// Block 1
 			stack.add(curNodeIdx);
@@ -296,9 +362,9 @@ public class GraphUsingEdgeList extends Graph {
 		int source_idx = stack.peek();
 		
 		for(Edge e: edges) {
-			forLoopCountInDFS++;
-			if(e.getEndpoint1() == source_idx) {
-				int destination_idx = e.getEndpoint2();
+		
+			if(e.getEndPoint1() == source_idx) {
+				int destination_idx = e.getEndPoint2();
 				/* At this point the vertex having index source_idx
 				 * is not completely explored so we don't remove it 
 				 * from the stack.
@@ -308,16 +374,18 @@ public class GraphUsingEdgeList extends Graph {
 				 */
 				getDFSResult(destination_idx, stack, visitedNodes, dfsResult);
 			}
-			else if(e.getEndpoint2() == source_idx) {
-				int destination_idx = e.getEndpoint1();
-				/* At this point the vertex having index source_idx
-				 * is not completely explored so we don't remove it 
-				 * from the stack.
-				 * 
-				 * We now start exploring the vertex having index 
-				 * destination_idx.
-				 */
-				getDFSResult(destination_idx, stack, visitedNodes, dfsResult);
+			if(!isDirected) {
+				if(e.getEndPoint2() == source_idx) {
+					int destination_idx = e.getEndPoint1();
+					/* At this point the vertex having index source_idx
+					 * is not completely explored so we don't remove it 
+					 * from the stack.
+					 * 
+					 * We now start exploring the vertex having index 
+					 * destination_idx.
+					 */
+					getDFSResult(destination_idx, stack, visitedNodes, dfsResult);
+				}
 			}
 		}
 		/* This is the point where the vertex having index 
@@ -328,13 +396,302 @@ public class GraphUsingEdgeList extends Graph {
 		stack.pop();
 	}
 	
+	/* For Graph using edge list 
+	 * cycleCheckerUsingBFS() has a time complexity 
+	 * of O(|V|*(1+|E|)+1) = O(|V|+|V|*|E|+1) which is equivalent to
+	 * O(|V|*|E|).
+	 * 
+	 * The while loop will run only when queue is not empty and each
+	 * node will be added to the queue exactly once so while loop
+	 * will run at most |V| times in case if no cycle is present
+	 * and where |V| represents the number
+	 * of vertices in the current component of the graph.
+	 * 
+	 * The inner for loop
+	 * for(Edge e: edges) { }
+	 * will run at most |E| times.
+	 * 
+	 * O(1) is the time complexity of Block 1.
+	 */
+	protected boolean cycleCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, boolean visitedNodes[]) {
+		
+		/* If a vertex is unvisited then store that vertex index and
+		 * the previous vertex index from which we came to this vertex
+		 * in the queue in the format {curNodeIdx, prevNodeIdx}.
+		 */
+		if(!visitedNodes[curNodeIdx]) {
+			// Block 1
+			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
+			visitedNodes[curNodeIdx] = true;
+		}
+		
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSCycleChecker++;
+			/*
+			 * Note frontNodeInfo[] contains the curNodeIdx as its first
+			 * element and the prevNodeIdx as its second element.
+			 * 
+			 */
+			Integer frontNodeInfo[] = queue.remove();
+			
+			for(Edge edge: edges) {
+				innerForLoopCountInBFSCycleChecker++;
+				
+				boolean hasFoundAdjacentNode = false;
+				int destinationIdx = -1;
+				
+				if(edge.getEndPoint1() == frontNodeInfo[0]) {
+					/*
+					 * destinationIdx refers to the index of an 
+					 * adjacent node of the node having index 
+					 * frontNodeInfo[0].
+					 */
+					destinationIdx = edge.getEndPoint2();
+					hasFoundAdjacentNode = true;
+				}
+				else if(edge.getEndPoint2() == frontNodeInfo[0]) {
+					/*
+					 * destinationIdx refers to the index of an 
+					 * adjacent node of the node having index 
+					 * frontNodeInfo[0].
+					 */
+					destinationIdx = edge.getEndPoint1();
+					hasFoundAdjacentNode = true;
+				}
+				
+				if(hasFoundAdjacentNode) {
+					if(!visitedNodes[destinationIdx]) {
+						queue.add(new Integer[] {destinationIdx, frontNodeInfo[0]});
+						visitedNodes[destinationIdx] = true;
+					}
+					else {
+						/*
+						 * Here we see the node having index 
+						 * destinationIdx is already visited so we
+						 * compare this node's index with prevNodeIdx
+						 * of the node having index frontNodeInfo[0].
+						 */
+						if(frontNodeInfo[1] != destinationIdx) {
+							// Here cycle is detected.
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/*
+	 * cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[])
+	 * has a time complexity of O(|V|*|E|) + O(|V|) which is 
+	 * equivalent to O(|V|*|E|).
+	 * 
+	 * O(|V|*|E|) is the time complexity of the for-loop in case when
+	 * there is no cycle in the graph.
+	 * 
+	 * O(|V|) is the time complexity for the number of times the 
+	 * Block 1 is run and the call for cycleCheckerUsingDFS() is 
+	 * made.
+	 * 
+	 */
+	protected boolean cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[]) {
+		
+		if(!visitedNodes[curNodeIdx]) {
+			// Block 1
+			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
+			visitedNodes[curNodeIdx] = true;
+		}
+			
+		Integer topNodeInfo[] = stack.peek();
+		for(Edge edge: edges) {
+			forLoopCountInDFSCycleChecker++;
+			
+			boolean hasFoundAdjacentNode = false;
+			int destinationIdx = -1;
+			
+			if(edge.getEndPoint1() == topNodeInfo[0]) {
+				/*
+				 * destinationIdx refers to the index of an 
+				 * adjacent node of the node having index 
+				 * topNodeInfo[0].
+				 */
+				destinationIdx = edge.getEndPoint2();
+				hasFoundAdjacentNode = true;
+			}
+			else if(edge.getEndPoint2() == topNodeInfo[0]) {
+				/*
+				 * destinationIdx refers to the index of an 
+				 * adjacent node of the node having index 
+				 * topNodeInfo[0].
+				 */
+				destinationIdx = edge.getEndPoint1();
+				hasFoundAdjacentNode = true;
+			}
+			
+			if(hasFoundAdjacentNode) {
+				if(!visitedNodes[destinationIdx]) {
+					if(cycleCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, visitedNodes)) 
+						return true;
+				}
+				else {
+					/*
+					 * Here the node having index destinationIdx is 
+					 * visited so we compare its index with the 
+					 * prevNodeIdx.
+					 */
+					if(destinationIdx != topNodeInfo[1]) {
+						return true;
+					}
+				}
+			}
+		}
+		stack.pop();
+		
+		return false;
+	}
+	
+	/*
+	 * bipartiteCheckerUsingBFS() has a time complexity of 
+	 * O(|V| + |V|*|E| + 1) which is equivalent to O(|V|*|E|).
+	 * 
+	 * O(|V|) is the time complexity for the while-loop for the 
+	 * case when the graph is bipartite.
+	 * 
+	 * O(|V|*|E|) is the time complexity of for-loop for the 
+	 * case when the graph is bipartite.
+	 * 
+	 * O(1) is the time complexity of Block 1.
+	 * 
+	 */
+	@Override
+	protected boolean bipartiteCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue,
+			int[] nodesColor) {
+		if(nodesColor[curNodeIdx] == 0) {
+			// Block 1
+			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
+			nodesColor[curNodeIdx] = 1;
+		}
+		
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSBipartiteChecker++;
+			
+			Integer frontNodeInfo[] = queue.remove();
+			
+			for(Edge edge: edges) {
+				innerForLoopCountInBFSBipartiteChecker++;
+				
+				boolean hasFoundAdjacentNode= false;
+				int destinationIdx = -1;
+				
+				if(edge.getEndPoint1() == frontNodeInfo[0]) {
+					destinationIdx = edge.getEndPoint2();
+					hasFoundAdjacentNode = true;
+				}
+				else if(edge.getEndPoint2() == frontNodeInfo[0]) {
+					destinationIdx = edge.getEndPoint1();
+					hasFoundAdjacentNode = true;
+				}
+				
+				if(hasFoundAdjacentNode) {
+					hasFoundAdjacentNode = false;
+					if(nodesColor[destinationIdx] == 0) {
+						queue.add(new Integer[] {destinationIdx, frontNodeInfo[0]});
+						if(nodesColor[frontNodeInfo[0]] == 1)
+							nodesColor[destinationIdx] = 2;
+						else
+							nodesColor[destinationIdx] = 1;
+					}
+					else {
+						/* 
+						 * Here we have found an adjacent node that
+						 * is already colored.
+						 */
+						if(nodesColor[destinationIdx] == nodesColor[frontNodeInfo[0]])
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	/*
+	 * bipartiteCheckerUsingDFS() has a time complexity of 
+	 * O(|V| + |V|*|E|) which is equivalent to O(|V|*|E|).
+	 * 
+	 * O(|V|) is the time complexity of the Block 1 and that
+	 * of the recursive calls for bipartiteCheckerUsingDFS()
+	 * in the case when the graph is bipartite.
+	 * 
+	 * O(|V|*|E|) is the time complexity of for-loop for the 
+	 * case when the graph is bipartite.
+	 * 
+	 */
+	@Override
+	protected boolean bipartiteCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack,
+			int[] nodesColor) {
+		
+		if(nodesColor[curNodeIdx] == 0) {
+			// Block 1
+			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
+			nodesColor[curNodeIdx] = 1;
+		}
+		
+		Integer topNodeInfo[] = stack.pop();
+		
+		for(Edge edge: edges) {
+			forLoopCountInDFSBipartiteChecker++;
+			
+			boolean hasFoundAdjacentNode = false;
+			int destinationIdx = -1;
+			if(edge.getEndPoint1() == topNodeInfo[0]) {
+				destinationIdx = edge.getEndPoint2();
+				hasFoundAdjacentNode = true;
+			}
+			else if (edge.getEndPoint2() == topNodeInfo[0]) {
+				destinationIdx = edge.getEndPoint1();
+				hasFoundAdjacentNode = true;
+			}
+			
+			if(hasFoundAdjacentNode) {
+				/*
+				 * Here we have found one adjacent node of the 
+				 * node having index topNodeInfo[0].
+				 * 
+				 * And that adjacent node's index is 
+				 * destinationIdx;
+				 */
+				hasFoundAdjacentNode = false;
+				if(nodesColor[destinationIdx] == 0) {
+					stack.add(new Integer[] {destinationIdx, topNodeInfo[0]});
+					if(nodesColor[topNodeInfo[0]] == 1)
+						nodesColor[destinationIdx] = 2;
+					else
+						nodesColor[destinationIdx] = 1;
+					
+					if(!bipartiteCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, nodesColor))
+						return false;
+				}
+				else {
+					/* 
+					 * Here we have found an adjacent node that
+					 * is already colored.
+					 */
+					if(nodesColor[destinationIdx] == nodesColor[topNodeInfo[0]])
+						return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	public static void main(String[] args) {
 		// Create a list of Vertices.
-		String vertices[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I"};
-		String edges[]= {
-				"B A", "C A", "1D A", "C B", "B D", "C D", "C E", "D H",
-				"E F", "E G", "F I", "G H", "G I", "H I"
-				};
+		String vertices[] = {"A", "B", "C", "D", "E"};
+		String edges[]= {"A B", "D A", "E B", "C D", "D E"};
 		// {"A B", "A C", "B D", "B E", "E D"}
 		/* {
 		"A B", "A C", "A D", "B C", "B D", "C D", "C E", "D H",
@@ -342,36 +699,43 @@ public class GraphUsingEdgeList extends Graph {
 		}
 		*/
 
-		GraphUsingEdgeList graph = new GraphUsingEdgeList();
+		GraphUsingEdgeList graph = new GraphUsingEdgeList(GraphType.UNDIRECTED);
 		
 		graph.createGraph(vertices, edges);
-		System.out.println("Vertices: "+graph.getVertices());
-		System.out.println("Edges: "+graph.edges);
+		log.info("Vertices: "+graph.getVertices());
+		log.info("Edges: "+graph.edges);
 		
 //		graph.addVertex("E");
-//		System.out.println("Vertices: "+graph.getVertices());
-//		graph.addEdge(7, 8);
-		graph.addEdge("E", "D1");
-//		System.out.println("Vertices: "+graph.getVertices());
-//		System.out.println("Edges: "+graph.edges);
+//		log.info("Vertices: "+graph.getVertices());
+		graph.addEdge(8, 7);
+//		graph.addEdge("E", "B");
+//		log.info("Vertices: "+graph.getVertices());
+//		log.info("Edges: "+graph.edges);
 		
-//		ArrayList<Integer> adjacentNodes = graph.getAdjacentNodes(1);
-//		System.out.println("Adjacent Nodes: "+adjacentNodes);
-//		
+//		ArrayList<Integer> adjacentNodes = graph.getAdjacentNodes(0);
+//		log.info("Adjacent Nodes: "+adjacentNodes);
+		
 //		graph.removeVertex(0);
-//		System.out.println("Vertices: "+graph.getVertices());
-//		System.out.println("Edges: "+graph.edges);
+//		log.info("Vertices: "+graph.getVertices());
+//		log.info("Edges: "+graph.edges);
+//		log.info(graph.getVertexIndex("C"));
 //		
-//		boolean edgeRemoved = graph.removeEdge(1, 3);
-//		System.out.println(edgeRemoved);
-//		System.out.println("Vertices: "+graph.getVertices());
-//		System.out.println("Edges: "+graph.edges);
+//		boolean edgeRemoved = graph.removeEdge(3, 1);
+//		log.info(edgeRemoved);
+//		log.info("Vertices: "+graph.getVertices());
+//		log.info("Edges: "+graph.edges);
 		
 //		ArrayList<Integer> bfsResult = graph.performBFS(0);
-//		System.out.println("BFS result: "+bfsResult);
-//		
+//		log.info("BFS result: "+bfsResult);
+		
 //		ArrayList<Integer> dfsResult = graph.performDFS(0);
-//		System.out.println("DFS result: "+dfsResult);
-
+//		log.info("DFS result: "+dfsResult);
+		
+		log.info("Cycle check using BFS says, Cycle present: "+graph.cycleCheckUsingBFS());
+//		log.info("Cycle check using DFS says, Cycle present: "+graph.cycleCheckUsingDFS());
+	
+//		log.info("Bipartite check using BFS says: "+graph.bipartiteCheckUsingBFS());
+//		log.info("Bipartite check using DFS says: "+graph.bipartiteCheckUsingDFS());
+	
 	}
 }

@@ -1,5 +1,7 @@
 package utilities;
 
+import org.apache.logging.log4j.Logger;
+
 public class HelperClass {
 	
 	public static int[] concatenateArrays(int a[], int b[]) {
@@ -40,5 +42,14 @@ public class HelperClass {
 	public static int generateRandomNumber(int min, int max) {
 		int rn = (int)Math.floor( Math.random()*max) + min;
 		return rn;
+	}
+	
+	public static void logException(Logger log, String msg, StackTraceElement elements[]) {
+		log.error("<-------------Stacktrace---------------");
+		log.error(msg);
+		for(StackTraceElement el: elements) {
+			log.error(el);
+		}
+		log.error("-------------------------------------->");
 	}
 }
