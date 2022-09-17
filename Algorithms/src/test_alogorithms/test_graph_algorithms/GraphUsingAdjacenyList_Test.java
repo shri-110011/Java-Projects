@@ -5,14 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import algorithms.graph_algorithms.GraphType;
 import algorithms.graph_algorithms.GraphUsingAdjacencyList;
-import algorithms.graph_algorithms.GraphUsingAdjacencyMatrix;
-import algorithms.graph_algorithms.GraphUsingEdgeList;
-import algorithms.graph_algorithms.Vertex;
 import algorithms.graph_algorithms.graph_exceptions.VerticesAndEdgesGroupsLengthMismatchException;
 
 public class GraphUsingAdjacenyList_Test {
@@ -23,7 +18,9 @@ public class GraphUsingAdjacenyList_Test {
 
 		final int noOfTestCases = verticesGroups.length;
 		
-		int sizeOfAdjacencyList[] = {10, 10, 10};
+		int sizeOfAdjacencyLists[] = new int[noOfTestCases];
+		Arrays.fill(sizeOfAdjacencyLists, 10);
+		
 		graphs = new ArrayList<GraphUsingAdjacencyList>();
 		
 		int vgsLen = verticesGroups.length, egsLen = edgesGroups.length;
@@ -36,7 +33,7 @@ public class GraphUsingAdjacenyList_Test {
 		}
 		
 		for(int i=0; i<noOfTestCases; i++) {
-			graphs.add(new GraphUsingAdjacencyList(sizeOfAdjacencyList[i], gts[i]));
+			graphs.add(new GraphUsingAdjacencyList(sizeOfAdjacencyLists[i], gts[i]));
 			graphs.get(i).createGraph(verticesGroups[i], edgesGroups[i]);
 		}
 		

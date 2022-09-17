@@ -1,6 +1,7 @@
 package algorithms.graph_algorithms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -11,7 +12,6 @@ import algorithms.graph_algorithms.graph_exceptions.InvalidEdgeFormatException;
 import algorithms.graph_algorithms.graph_exceptions.InvalidVertexNameException;
 import algorithms.graph_algorithms.graph_exceptions.NumberOfVerticesOutOfBoundsException;
 import algorithms.graph_algorithms.graph_exceptions.VertexNotExistException;
-import test_alogorithms.test_graph_algorithms.CommonGraphMethods_Test;
 
 public class GraphUsingAdjacencyMatrix extends Graph {
 	
@@ -306,16 +306,8 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * will run at most |V| times for each iteration of the while 
 	 * loop.
 	 */
-	protected boolean cycleCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, boolean visitedNodes[]) {
+	protected boolean cycleCheckerUsingBFS(Queue<Integer[]> queue, boolean visitedNodes[]) {
 	int noOfVertices = getNoOfVertices();
-		/* If a vertex is unvisited then store that vertex index and
-		 * the previous vertex index from which we came to this vertex
-		 * in the queue in the format {curNodeIdx, prevNodeIdx}.
-		 */
-		if(!visitedNodes[curNodeIdx]) {
-			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			visitedNodes[curNodeIdx] = true;
-		}
 		
 		while(!queue.isEmpty()) {
 			whileLoopCountInBFSCycleChecker++;
@@ -336,6 +328,10 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 					 */
 					int destinationIdx = i;
 					if(!visitedNodes[destinationIdx]) {
+						/* If a vertex is unvisited then store that vertex index and
+						 * the previous vertex index from which we came to this vertex
+						 * in the queue in the format {curNodeIdx, prevNodeIdx}.
+						 */
 						queue.add(new Integer[] {destinationIdx, frontNodeInfo[0]});
 						visitedNodes[destinationIdx] = true;
 					}
@@ -366,18 +362,12 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * O(|V|^2) is the time complexity of the for-loop in case when
 	 * there is no cycle in the graph.
 	 * 
-	 * O(|V|) is the time complexity for the number of times the 
-	 * Block 1 is run and the call for cycleCheckerUsingDFS() is made
-	 * in the worst case.
+	 * O(|V|) is the time complexity for popping the stack and for 
+	 * recursive calls to cycleCheckerUsingDFS().
 	 * 
 	 */
-	protected boolean cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[]) {
+	protected boolean cycleCheckerUsingDFS(Stack<Integer[]> stack, boolean visitedNodes[]) {
 		int noOfVertices = getNoOfVertices();
-		if(!visitedNodes[curNodeIdx]) {
-			// Block 1
-			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			visitedNodes[curNodeIdx] = true;
-		}
 			
 		Integer topNodeInfo[] = stack.peek();
 		for(int i=0; i<noOfVertices; i++) {
@@ -390,7 +380,9 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 				 */
 				int destinationIdx = i;
 				if(!visitedNodes[destinationIdx]) {
-					if(cycleCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, visitedNodes)) 
+					stack.add(new Integer[] {destinationIdx, topNodeInfo[0]});
+					visitedNodes[destinationIdx] = true;
+					if(cycleCheckerUsingDFS(stack, visitedNodes)) 
 						return true;
 				}
 				else {
@@ -420,19 +412,15 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * O(|V|^2) is the time complexity of for-loop for the 
 	 * case when the graph is bipartite.
 	 * 
-	 * O(1) is the time complexity of Block 1.
+	 * O(1) is the time complexity of return true; statement 
+	 * after the while loop in the case if the graph is bipartite.
 	 * 
 	 */
 	@Override
-	protected boolean bipartiteCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue,
+	protected boolean bipartiteCheckerUsingBFS(Queue<Integer[]> queue,
 			int[] nodesColor) {
 		int noOfVertices = getNoOfVertices();
-		if(nodesColor[curNodeIdx] == 0) {
-			// Block 1
-			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			nodesColor[curNodeIdx] = 1;
-		}
-		
+
 		while(!queue.isEmpty()) {
 			whileLoopCountInBFSBipartiteChecker++;
 			
@@ -468,8 +456,8 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * bipartiteCheckerUsingDFS() has a time complexity of 
 	 * O(|V| + |V|*|V|) which is equivalent to O(|V|^2).
 	 * 
-	 * O(|V|) is the time complexity of the Block 1 and that
-	 * of the recursive calls for bipartiteCheckerUsingDFS()
+	 * O(|V|) is the time complexity of popping the stack and 
+	 * that of the recursive calls for bipartiteCheckerUsingDFS()
 	 * in the case when the graph is bipartite.
 	 * 
 	 * O(|V|^2) is the time complexity of for-loop for the 
@@ -477,15 +465,10 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * 
 	 */
 	@Override
-	protected boolean bipartiteCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack,
+	protected boolean bipartiteCheckerUsingDFS(Stack<Integer[]> stack,
 			int[] nodesColor) {
 		
 		int noOfVertices = getNoOfVertices();
-		
-		if(nodesColor[curNodeIdx] == 0) {
-			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			nodesColor[curNodeIdx] = 1;
-		}
 		
 		Integer topNodeInfo[] = stack.pop();
 		
@@ -508,7 +491,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 					else
 						nodesColor[destinationIdx] = 1;
 					
-					if(!bipartiteCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, nodesColor))
+					if(!bipartiteCheckerUsingDFS(stack, nodesColor))
 						return false;
 				}
 				else {
@@ -525,10 +508,204 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		return true;
 	}
 	
+	/*
+	 * cycleCheckerUsingDFSForDirectedGraph() has a time complexity
+	 * of O(|V| + |V|^2) which is equivalent to O(|V|^2).
+	 * 
+	 * O(|V|) is the time complexity of the Block 1
+	 * in the case when the graph is acyclic.
+	 * 
+	 * The recursive calls to cycleCheckerUsingDFSForDirectedGraph()
+	 * will occur at most |V| times in case when the graph is 
+	 * acyclic. 
+	 * 
+	 * O(|V|^2) is the time complexity of for-loop for the 
+	 * case when the graph is acyclic.
+	 * 
+	 */
+	protected boolean cycleCheckerUsingDFSForDirectedGraph(Stack<Integer[]> stack, boolean visitedNodes[], boolean dfsVisited[]) {
+		
+		int noOfVertices = getNoOfVertices();
+		Integer topNodeInfo[] = stack.pop();
+		
+		for(int i=0; i<noOfVertices; i++) {
+			forLoopCountInDFSCycleChecker++;
+			if(adjacencyMatrix[topNodeInfo[0]][i]) {
+				/* Found the adjacent node of the node having
+				 * index curNodeIdx.
+				 */
+				int destinationIdx = i;
+				
+				if(!visitedNodes[destinationIdx]) {
+					// Block 1
+					stack.add(new Integer[] {destinationIdx, topNodeInfo[0]});
+					visitedNodes[destinationIdx] = true;
+					dfsVisited[destinationIdx] = true;
+					
+					if(cycleCheckerUsingDFSForDirectedGraph(stack, visitedNodes, dfsVisited)) return true;
+				}
+				else {
+					/* Here the adjacent node has already 
+					 * been visited.
+					 * So we compare its index with the 
+					 * prevNodeIdx.
+					 * 
+					 * Note: topNodeInfo[0] contains curNodeIdx
+					 * topNodeInfo[1] contains prevNodeIdx
+					 */
+					if(destinationIdx != topNodeInfo[1] &&
+							dfsVisited[destinationIdx]) {
+						return true;
+					}
+				}
+			}
+		}
+		/* Here we have a node whose exploration is complete. So
+		 * we mark the dfsVisited for that node as false.
+		 * 
+		 */
+		dfsVisited[topNodeInfo[0]] = false;
+			
+		return false;
+	}
+	
+	/*
+	 * getDFSTopologicalSortResult() has a time complexity of 
+	 * O(|V|*|E| + |V|) which is equivalent to O(|V|*|E|).
+	 * 
+	 * The for-loop will run exactly |V|*|E| times.
+	 * 
+	 * The recursive call for getDFSTopologicalSortResult() and 
+	 * stack push operation will occur exactly |V| times.  
+	 */
+	@Override
+	protected void getDFSTopologicalSortResult(int curNodeIdx, Stack<Integer> stack, boolean[] visitedNodes,
+			ArrayList<Integer> dfsTopoSortResult) {
+		int noOfVertices = getNoOfVertices();
+		
+		for(int i=0; i<noOfVertices; i++) {
+			forLoopCountInDFSTopoSort++;
+			int destinationIdx = i;
+			if(adjacencyMatrix[curNodeIdx][i]) {
+				if(!visitedNodes[destinationIdx]) {
+					visitedNodes[destinationIdx] = true;
+					// Pushing the adjacent node to the stack
+					getDFSTopologicalSortResult(destinationIdx, stack, visitedNodes, dfsTopoSortResult);
+				}
+			}
+		}
+		stack.push(curNodeIdx);
+		if(!stack.isEmpty())
+			dfsTopoSortResult.add(stack.pop());
+	}
+	
+	/* getIndegrees() has a time complexity of O(|V|^2+1)
+	 * which is equivalent to O(|V|^2).
+	 * 
+	 * The outer for-loop runs exactly |V| times.
+	 * The inner for-loop runs exactly |V|^2 times.
+	 * 
+	 */
+	protected int[] getIndegrees() {
+		int noOfVertices = getNoOfVertices(),
+				inDegrees[] = new int[noOfVertices];
+		
+		for(int i=0; i<noOfVertices; i++) {
+			outerForLoopOfIndegrees++;
+			int inDegree = 0;
+			for(int j=0; j<noOfVertices; j++) {
+				innerForLoopOfIndegrees++;
+				if(adjacencyMatrix[j][i]) {
+					inDegree++;
+				}
+			}
+			inDegrees[i] = inDegree;
+		}
+		log.info("Indegrees array: "+Arrays.toString(inDegrees));
+		return inDegrees;
+	}
+	
+	/* getBFSTopologicalSortResult() has a time complexity of
+	 * O(|V|^2+|V|) which is equivalent to O(|V|^2).
+	 * 
+	 * The while loop runs exactly |V| times in case the graph 
+	 * is directed.
+	 * 
+	 * The inner for loop runs exactly |V|^2 times in case 
+	 * the graph is directed.
+	 * 
+	 */
+	protected void getBFSTopologicalSortResult(Queue<Integer> queue, int indegrees[], ArrayList<Integer> bfsTopoSortResult) {
+		
+		/* At this point the queue already contains nodes having
+		 * indegree as 0.
+		 */
+
+		int noOfVertices = getNoOfVertices();
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSTopoSort++;
+			int nodeIdx = queue.remove();
+			
+			for(int i=0; i<noOfVertices; i++) {
+				innerForLoopCountInBFSTopoSort++;
+				if(adjacencyMatrix[nodeIdx][i]) {
+					/* Here we have found the adjacent node of the 
+					 * node having index nodeIdx. 
+					 */
+					int destinationIdx = i;
+					if(--indegrees[destinationIdx] == 0) {
+						queue.add(destinationIdx);
+						bfsTopoSortResult.add(destinationIdx);
+					}
+				}
+			}
+		}
+	}
+	
+	/* cycleCheckerUsingBFSForDirectedGraph() has a time 
+	 * complexity of O(|V|+|V|^2+1) which is equivalent to 
+	 * O(|V|^2);
+	 * 
+	 * The while loop will run at most |V| times and that 
+	 * in the case the graph is acyclic.
+	 * 
+	 * The inner for-loop will run at most |V|^2 times in the 
+	 * case the graph is acyclic. 
+	 * 
+	 */
+	protected boolean cycleCheckerUsingBFSForDirectedGraph(Queue<Integer> queue, int inDegrees[]) {
+		
+		int noOfZerosInInDegrees = queue.size(),
+				noOfVertices = getNoOfVertices();
+		
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSCycleChecker++;
+			int nodeIdx = queue.remove();
+			
+			for(int i=0; i<noOfVertices; i++) {
+				innerForLoopCountInBFSCycleChecker++;
+				if(adjacencyMatrix[nodeIdx][i]) {
+					/* Here we have found the adjacent node of the 
+					 * node having index nodeIdx. 
+					 */
+					int destinationIdx = i;
+					if(--inDegrees[destinationIdx] == 0) {
+						queue.add(destinationIdx);
+						noOfZerosInInDegrees++;
+					}
+				}
+			}
+		}
+		
+		log.info("noOfZerosInInDegrees: "+noOfZerosInInDegrees);
+		if(noOfZerosInInDegrees == getNoOfVertices()) return false;
+		return true;
+	}
+	
 	public static void main(String[] args) {
 		// Create a list of Vertices.
-		String vertices[] = {"A", "B", "C", "D", "E", "F"};
-		String edges[]= {"A B", "D A", "C B", "E D", "E F"};
+		String vertices[] = {"A", "B", "C", "D", "E"};
+		String edges[]= {"B A", "A C", "D C", "B D", "C E"};
 		
 		// {"A B", "A C", "B D"}
 		/* {
@@ -537,7 +714,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		}
 		*/
 		
-		GraphUsingAdjacencyMatrix graph = new GraphUsingAdjacencyMatrix(9);
+		GraphUsingAdjacencyMatrix graph = new GraphUsingAdjacencyMatrix(9, GraphType.DIRECTED);
 		graph.createGraph(vertices, edges);
 		
 //		graph.addVertex("E");
@@ -575,12 +752,18 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 //		ArrayList<Integer> dfsResult = graph.performDFS(0);
 //		log.info("DFS result: "+dfsResult);
 		
-		log.info("Cycle check using BFS says, Cycle present: "+graph.cycleCheckUsingBFS());
+//		log.info("Cycle check using BFS says, Cycle present: "+graph.cycleCheckUsingBFS());
 //		log.info("Cycle check using DFS says, Cycle present: "+graph.cycleCheckUsingDFS());
 	
 //		log.info("Bipartite check using BFS says: "+graph.bipartiteCheckUsingBFS());
 //		log.info("Bipartite check using DFS says: "+graph.bipartiteCheckUsingDFS());
 	
+//		ArrayList<Integer> dfsTopoSortResult = graph.performDFSTopologicalSorting(1);
+//		log.info("DFS topo sort result: "+dfsTopoSortResult);
+		
+//		ArrayList<Integer> bfsTopoSortResult = graph.performBFSTopologicalSorting();
+//		log.info("BFS topo sort result: "+bfsTopoSortResult);
+
 	}
 
 }

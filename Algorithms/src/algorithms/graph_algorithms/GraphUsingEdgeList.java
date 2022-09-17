@@ -1,6 +1,8 @@
 package algorithms.graph_algorithms;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -411,19 +413,8 @@ public class GraphUsingEdgeList extends Graph {
 	 * for(Edge e: edges) { }
 	 * will run at most |E| times.
 	 * 
-	 * O(1) is the time complexity of Block 1.
 	 */
-	protected boolean cycleCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, boolean visitedNodes[]) {
-		
-		/* If a vertex is unvisited then store that vertex index and
-		 * the previous vertex index from which we came to this vertex
-		 * in the queue in the format {curNodeIdx, prevNodeIdx}.
-		 */
-		if(!visitedNodes[curNodeIdx]) {
-			// Block 1
-			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			visitedNodes[curNodeIdx] = true;
-		}
+	protected boolean cycleCheckerUsingBFS(Queue<Integer[]> queue, boolean visitedNodes[]) {
 		
 		while(!queue.isEmpty()) {
 			whileLoopCountInBFSCycleChecker++;
@@ -461,6 +452,10 @@ public class GraphUsingEdgeList extends Graph {
 				
 				if(hasFoundAdjacentNode) {
 					if(!visitedNodes[destinationIdx]) {
+						/* If a vertex is unvisited then store that vertex index and
+						 * the previous vertex index from which we came to this vertex
+						 * in the queue in the format {curNodeIdx, prevNodeIdx}.
+						 */
 						queue.add(new Integer[] {destinationIdx, frontNodeInfo[0]});
 						visitedNodes[destinationIdx] = true;
 					}
@@ -491,19 +486,11 @@ public class GraphUsingEdgeList extends Graph {
 	 * O(|V|*|E|) is the time complexity of the for-loop in case when
 	 * there is no cycle in the graph.
 	 * 
-	 * O(|V|) is the time complexity for the number of times the 
-	 * Block 1 is run and the call for cycleCheckerUsingDFS() is 
-	 * made.
-	 * 
+	 * O(|V|) is the time complexity for popping the stack and for 
+	 * recursive calls to cycleCheckerUsingDFS().
 	 */
-	protected boolean cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[]) {
+	protected boolean cycleCheckerUsingDFS(Stack<Integer[]> stack, boolean visitedNodes[]) {
 		
-		if(!visitedNodes[curNodeIdx]) {
-			// Block 1
-			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			visitedNodes[curNodeIdx] = true;
-		}
-			
 		Integer topNodeInfo[] = stack.peek();
 		for(Edge edge: edges) {
 			forLoopCountInDFSCycleChecker++;
@@ -532,7 +519,9 @@ public class GraphUsingEdgeList extends Graph {
 			
 			if(hasFoundAdjacentNode) {
 				if(!visitedNodes[destinationIdx]) {
-					if(cycleCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, visitedNodes)) 
+					stack.add(new Integer[] {destinationIdx, topNodeInfo[0]});
+					visitedNodes[destinationIdx] = true;
+					if(cycleCheckerUsingDFS(stack, visitedNodes)) 
 						return true;
 				}
 				else {
@@ -562,17 +551,12 @@ public class GraphUsingEdgeList extends Graph {
 	 * O(|V|*|E|) is the time complexity of for-loop for the 
 	 * case when the graph is bipartite.
 	 * 
-	 * O(1) is the time complexity of Block 1.
-	 * 
+	 *  O(1) is the time complexity of return true; statement 
+	 *  after the while loop in the case if the graph is bipartite.
 	 */
 	@Override
-	protected boolean bipartiteCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue,
+	protected boolean bipartiteCheckerUsingBFS(Queue<Integer[]> queue,
 			int[] nodesColor) {
-		if(nodesColor[curNodeIdx] == 0) {
-			// Block 1
-			queue.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			nodesColor[curNodeIdx] = 1;
-		}
 		
 		while(!queue.isEmpty()) {
 			whileLoopCountInBFSBipartiteChecker++;
@@ -621,8 +605,8 @@ public class GraphUsingEdgeList extends Graph {
 	 * bipartiteCheckerUsingDFS() has a time complexity of 
 	 * O(|V| + |V|*|E|) which is equivalent to O(|V|*|E|).
 	 * 
-	 * O(|V|) is the time complexity of the Block 1 and that
-	 * of the recursive calls for bipartiteCheckerUsingDFS()
+	 * O(|V|) is the time complexity of popping the stack and 
+	 * that of the recursive calls for bipartiteCheckerUsingDFS()
 	 * in the case when the graph is bipartite.
 	 * 
 	 * O(|V|*|E|) is the time complexity of for-loop for the 
@@ -630,14 +614,8 @@ public class GraphUsingEdgeList extends Graph {
 	 * 
 	 */
 	@Override
-	protected boolean bipartiteCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack,
+	protected boolean bipartiteCheckerUsingDFS(Stack<Integer[]> stack,
 			int[] nodesColor) {
-		
-		if(nodesColor[curNodeIdx] == 0) {
-			// Block 1
-			stack.add(new Integer[] {curNodeIdx, prevNodeIdx});
-			nodesColor[curNodeIdx] = 1;
-		}
 		
 		Integer topNodeInfo[] = stack.pop();
 		
@@ -671,7 +649,7 @@ public class GraphUsingEdgeList extends Graph {
 					else
 						nodesColor[destinationIdx] = 1;
 					
-					if(!bipartiteCheckerUsingDFS(destinationIdx, topNodeInfo[0], stack, nodesColor))
+					if(!bipartiteCheckerUsingDFS(stack, nodesColor))
 						return false;
 				}
 				else {
@@ -683,15 +661,204 @@ public class GraphUsingEdgeList extends Graph {
 						return false;
 				}
 			}
+		}	
+		return true;
+	}
+	
+	/*
+	 * cycleCheckerUsingDFSForDirectedGraph() has a time complexity
+	 * of O(|V| + |V|*|E|) which is equivalent to O(|V|*|E|).
+	 * 
+	 * O(|V|) is the time complexity of the Block 1
+	 * in the case when the graph is acyclic.
+	 * 
+	 * The recursive calls to cycleCheckerUsingDFSForDirectedGraph()
+	 * will occur at most |V| times in case when the graph is 
+	 * acyclic. 
+	 * 
+	 * O(|V|*|E|) is the time complexity of for-loop for the 
+	 * case when the graph is acyclic.
+	 * 
+	 */
+	protected boolean cycleCheckerUsingDFSForDirectedGraph(Stack<Integer[]> stack, boolean visitedNodes[], boolean dfsVisited[]) {
+		
+		Integer topNodeInfo[] = stack.pop();
+		
+		for(Edge edge: edges) {
+			forLoopCountInDFSCycleChecker++;
+			if(edge.getEndPoint1() == topNodeInfo[0]) {
+				/* Found the adjacent node of the node having
+				 * index curNodeIdx.
+				 */
+				int destinationIdx = edge.getEndPoint2();
+				
+				if(!visitedNodes[destinationIdx]) {
+					// Block 1
+					stack.add(new Integer[] {destinationIdx, topNodeInfo[0]});
+					visitedNodes[destinationIdx] = true;
+					dfsVisited[destinationIdx] = true;
+					
+					if(cycleCheckerUsingDFSForDirectedGraph(stack, visitedNodes, dfsVisited)) return true;
+				}
+				else {
+					/* Here the adjacent node has already 
+					 * been visited.
+					 * So we compare its index with the 
+					 * prevNodeIdx.
+					 * 
+					 * Note: topNodeInfo[0] contains curNodeIdx
+					 * topNodeInfo[1] contains prevNodeIdx
+					 */
+					if(destinationIdx != topNodeInfo[1] &&
+							dfsVisited[destinationIdx]) {
+						return true;
+					}
+				}
+			}
+		}
+		/* Here we have a node whose exploration is complete. So
+		 * we mark the dfsVisited for that node as false.
+		 * 
+		 */
+		dfsVisited[topNodeInfo[0]] = false;
+			
+		return false;
+	}
+	
+	/*
+	 * getDFSTopologicalSortResult() has a time complexity of 
+	 * O(|V|*|E| + |V|) which is equivalent to O(|V|*|E|).
+	 * 
+	 * The for-loop will run exactly |V|*|E| times.
+	 * 
+	 * The recursive call for getDFSTopologicalSortResult() and 
+	 * stack push operation will occur exactly |V| times.  
+	 */
+	@Override
+	protected void getDFSTopologicalSortResult(int curNodeIdx, Stack<Integer> stack, boolean[] visitedNodes,
+			ArrayList<Integer> dfsTopoSortResult) {
+		
+		for(Edge edge: edges) {
+			forLoopCountInDFSTopoSort++;
+			if(edge.getEndPoint1() == curNodeIdx) {
+				int destinationIdx = edge.getEndPoint2();
+				if(!visitedNodes[destinationIdx]) {
+					visitedNodes[destinationIdx] = true;
+					// Pushing the adjacent node to the stack
+					getDFSTopologicalSortResult(destinationIdx, stack, visitedNodes, dfsTopoSortResult);
+				}
+			}
+		}
+		stack.push(curNodeIdx);
+		if(!stack.isEmpty())
+			dfsTopoSortResult.add(stack.pop());
+		
+	}
+	
+	/* getIndegrees() has a time complexity of O(|V|+|V|*|E|+1)
+	 * which is equivalent to O(|V|*|E|).
+	 * 
+	 * The outer for-loop runs exactly |V| times.
+	 * The inner for-loop runs exactly |V|*|E| times.
+	 * 
+	 */
+	protected int[] getIndegrees() {
+		int noOfVertices = getNoOfVertices(),
+				inDegrees[] = new int[noOfVertices];
+		
+		for(int i=0; i<noOfVertices; i++) {
+			outerForLoopOfIndegrees++;
+			int inDegree = 0;
+			for(Edge edge: edges) {
+				innerForLoopOfIndegrees++;
+				if(edge.getEndPoint2() == i) {
+					inDegree++;
+				}
+			}
+			inDegrees[i] = inDegree;
+		}
+		log.info("Indegrees array: "+Arrays.toString(inDegrees));
+		return inDegrees;
+	}
+	
+	/* getBFSTopologicalSortResult() has a time complexity of
+	 * O(|V|*|E|+|V|) which is equivalent to O(|V|*|E|).
+	 * 
+	 * The while loop runs exactly |V| times in case the graph 
+	 * is directed.
+	 * 
+	 * The inner for loop runs exactly |V|*|E| times in case 
+	 * the graph is directed.
+	 * 
+	 */
+	protected void getBFSTopologicalSortResult(Queue<Integer> queue, int inDegrees[], ArrayList<Integer> bfsTopoSortResult) {
+		
+		/* At this point the queue already contains nodes having
+		 * indegree as 0.
+		 */
+
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSTopoSort++;
+			int nodeIdx = queue.remove();
+			
+			for(Edge edge: edges) {
+				innerForLoopCountInBFSTopoSort++;
+				if(edge.getEndPoint1() == nodeIdx) {
+					/* Here we have found the adjacent node of the 
+					 * node having index nodeIdx. 
+					 */
+					int destinationIdx = edge.getEndPoint2();
+					if(--inDegrees[destinationIdx] == 0) {
+						queue.add(destinationIdx);
+						bfsTopoSortResult.add(destinationIdx);
+					}
+				}
+			}
+		}
+	}
+	
+	/* cycleCheckerUsingBFSForDirectedGraph() has a time 
+	 * complexity of O(|V|+|V|*|E|+1) which is equivalent to 
+	 * O(|V|*|E|);
+	 * 
+	* The while loop will run at most |V| times and that 
+	 * in the case the graph is acyclic.
+	 * 
+	 * The inner for-loop will run at most |V|*|E| times in the 
+	 * case the graph is acyclic. 
+	 * 
+	 */
+	protected boolean cycleCheckerUsingBFSForDirectedGraph(Queue<Integer> queue, int inDegrees[]) {
+		
+		int noOfZerosInInDegrees = queue.size();
+		while(!queue.isEmpty()) {
+			whileLoopCountInBFSCycleChecker++;
+			int nodeIdx = queue.remove();
+			
+			for(Edge edge: edges) {
+				innerForLoopCountInBFSCycleChecker++;
+				if(edge.getEndPoint1() == nodeIdx) {
+					/* Here we have found the adjacent node of the 
+					 * node having index nodeIdx. 
+					 */
+					int destinationIdx = edge.getEndPoint2();
+					if(--inDegrees[destinationIdx] == 0) {
+						queue.add(destinationIdx);
+						noOfZerosInInDegrees++;
+					}
+				}
+			}
 		}
 		
+		log.info("noOfZerosInInDegrees: "+noOfZerosInInDegrees);
+		if(noOfZerosInInDegrees == getNoOfVertices()) return false;
 		return true;
 	}
 	
 	public static void main(String[] args) {
 		// Create a list of Vertices.
 		String vertices[] = {"A", "B", "C", "D", "E"};
-		String edges[]= {"A B", "D A", "E B", "C D", "D E"};
+		String edges[]= {"A B", "B C", "E A", "C D", "C E"};
 		// {"A B", "A C", "B D", "B E", "E D"}
 		/* {
 		"A B", "A C", "A D", "B C", "B D", "C D", "C E", "D H",
@@ -699,7 +866,7 @@ public class GraphUsingEdgeList extends Graph {
 		}
 		*/
 
-		GraphUsingEdgeList graph = new GraphUsingEdgeList(GraphType.UNDIRECTED);
+		GraphUsingEdgeList graph = new GraphUsingEdgeList(GraphType.DIRECTED);
 		
 		graph.createGraph(vertices, edges);
 		log.info("Vertices: "+graph.getVertices());
@@ -707,7 +874,7 @@ public class GraphUsingEdgeList extends Graph {
 		
 //		graph.addVertex("E");
 //		log.info("Vertices: "+graph.getVertices());
-		graph.addEdge(8, 7);
+//		graph.addEdge(8, 7);
 //		graph.addEdge("E", "B");
 //		log.info("Vertices: "+graph.getVertices());
 //		log.info("Edges: "+graph.edges);
@@ -737,5 +904,12 @@ public class GraphUsingEdgeList extends Graph {
 //		log.info("Bipartite check using BFS says: "+graph.bipartiteCheckUsingBFS());
 //		log.info("Bipartite check using DFS says: "+graph.bipartiteCheckUsingDFS());
 	
+//		ArrayList<Integer> dfsTopoSortResult = graph.performDFSTopologicalSorting();
+//		log.info("DFS topo sort result: "+dfsTopoSortResult);
+		
+//		ArrayList<Integer> bfsTopoSortResult = graph.performBFSTopologicalSorting();
+//		log.info("BFS topo sort result: "+bfsTopoSortResult);
+	
 	}
+	
 }

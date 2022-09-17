@@ -73,12 +73,20 @@ public class CommonGraphMethods_Test {
 				{{3, 4}}
 		};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		log.info("Inside testAddEdgeUsingIndices()");
 		for(Graph graph: graphs) {
 			int edges[][] = inputEdgeGroups[count];
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			for(int edge[]: edges) {
 				
@@ -91,7 +99,7 @@ public class CommonGraphMethods_Test {
 				// Check if that edge exist in the graph
 				Assert.assertEquals(true, graph.checkIfEdgeExistInGraph(edge[0], edge[1]));
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -128,12 +136,20 @@ public class CommonGraphMethods_Test {
 				{"B G"}
 		};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		log.info("Inside testAddEdgesUsingStringArrayOfEdges()");
 		for(Graph graph: graphs) {
 			String edges[] = inputEdgeGroups[count];
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			log.info("Edges to be added: "+Arrays.toString(edges));
 			
@@ -150,7 +166,7 @@ public class CommonGraphMethods_Test {
 					Assert.fail("The following edge: (\""+edge+"\") doesn't exist in the graph.");
 				}
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -189,10 +205,18 @@ public class CommonGraphMethods_Test {
 		};
 		log.info("Inside testRemoveEdgeUsingIndices()");
 
-		int count=0;
+		int count=0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			int edges[][] = inputEdgeGroups[count];
 			for(int edge[]: edges) {
@@ -206,7 +230,7 @@ public class CommonGraphMethods_Test {
 					Assert.fail("The following edge: ("+edge[0]+" ,"+edge[1]+") doesn't exist in the graph.");
 				}
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -244,10 +268,18 @@ public class CommonGraphMethods_Test {
 				{"L"}
 		};
 		log.info("Inside testAddVertexUsingVertexObject()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String verticesNames[] = inputVertexGroups[count];
 			for(String vertexName: verticesNames) {
@@ -257,7 +289,7 @@ public class CommonGraphMethods_Test {
 				log.info(graph.getVertices());
 				Assert.assertEquals(true, graph.checkIfVertexExistInGraph(vertexName));
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -295,10 +327,18 @@ public class CommonGraphMethods_Test {
 				{"L"}
 		};
 		log.info("Inside testAddVertexUsingName()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String verticesNames[] = inputVertexGroups[count];
 			for(String vertexName: verticesNames) {
@@ -308,7 +348,7 @@ public class CommonGraphMethods_Test {
 				log.info(graph.getVertices());
 				Assert.assertEquals(true, graph.checkIfVertexExistInGraph(vertexName));
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -346,10 +386,18 @@ public class CommonGraphMethods_Test {
 				{"M", "N"}
 		};
 		log.info("Inside testAddStringArrayOfVertices()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String verticesNames[] = inputVertexGroups[count];
 			log.info("Vertices array to be added: "+Arrays.toString(verticesNames));
@@ -360,7 +408,7 @@ public class CommonGraphMethods_Test {
 			for(String vertexName: verticesNames) {
 				Assert.assertEquals(true, graph.checkIfVertexExistInGraph(vertexName));
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -398,10 +446,18 @@ public class CommonGraphMethods_Test {
 				{"M", "N"}
 		};
 		log.info("Inside testAddVerticesUsingListOfVertexObjects()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String verticesNames[] = inputVertexGroups[count];
 			List<Vertex> vertexList = graph.getListOfVertexObjects(verticesNames);
@@ -415,7 +471,7 @@ public class CommonGraphMethods_Test {
 				Assert.assertEquals(true, graph.checkIfVertexExistInGraph(vertexName));
 			}
 			
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -453,10 +509,18 @@ public class CommonGraphMethods_Test {
 				{"D", "A"}
 		};
 		log.info("Inside testRemoveVertexUsingIndex()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String verticesNames[] = inputVertexGroups[count];
 			
@@ -471,7 +535,7 @@ public class CommonGraphMethods_Test {
 				Assert.assertNotEquals(true, graph.checkIfVertexExistInGraph(vertexName));
 			}
 			
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -522,10 +586,18 @@ public class CommonGraphMethods_Test {
 		
 		log.info("Inside testGetAdjacentNodes()");
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			/* A row from the inputSetsOfVertices[][] represents the 
 			 * inputs for the graph specified by graph.
@@ -554,7 +626,7 @@ public class CommonGraphMethods_Test {
 				}
 				vertexCount++;
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -593,10 +665,18 @@ public class CommonGraphMethods_Test {
 		};
 		
 		log.info("Inside testGetBFSResult()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String inputBFSTraversalResult[] = inputBFSTraversalResults[count];
 			List<Integer> actualBFSResult = graph.performBFS();
@@ -606,7 +686,7 @@ public class CommonGraphMethods_Test {
 			log.info("expectedBFSResult: "+expectedBFSResult);
 			Assert.assertEquals(true, actualBFSResult.equals(expectedBFSResult));
 			
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -645,10 +725,18 @@ public class CommonGraphMethods_Test {
 		};
 		
 		log.info("Inside testGetDFSResult()");
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			String inputDFSTraversalResult[] = inputDFSTraversalResults[count];
 			List<Integer> actualDFSResult = graph.performDFS();
@@ -658,7 +746,7 @@ public class CommonGraphMethods_Test {
 			log.info("expectedDFSResult: "+expectedDFSResult);
 			Assert.assertEquals(true, actualDFSResult.equals(expectedDFSResult));
 			
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -672,39 +760,53 @@ public class CommonGraphMethods_Test {
 					"A", "B", "C", "D", "E"
 				},
 				{"A", "B", "C", "D", "E", "F"},
+				{"A", "B", "C", "D", "E", "F", "G"},
+				{"A", "B", "C", "D", "E"},
+				{"A", "B", "C", "D", "E", "F"},
 				{"A", "B", "C", "D", "E", "F", "G"}
+	
 			};
 		// Create an array of Edges.
 		String edgesGroups[][]= {
 				{"A B", "D A", "E B", "C D", "D E"},
 				{"A B", "D A", "C B", "E D", "E F"},
-				{"A B", "C B", "C D", "D E", "F E", "C G", "C E"}
+				{"A B", "C B", "C D", "D E", "F E", "C G", "C E"},
+				{"A B", "B C", "E A", "C D", "C E"},
+				{"B C", "C D", "D F", "E D", "E A", "A B"},
+				{"A B", "D B", "C B", "C A", "A D", "C D", "B E", "G D", "E F", "E G"}
 			};
-		GraphType gts[] = {GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.UNDIRECTED};
+		GraphType gts[] = {GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.UNDIRECTED,
+				GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
 		initializeGraphs(verticesGroups, edgesGroups, gts);
 		
-		boolean inputBFSCycleCheckResults[] = {true, false, true};
+		boolean inputBFSCycleCheckResults[] = {true, false, true, true, false, true};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
 			
-			if(!graph.isDirected()) {
-				boolean hasCycle = inputBFSCycleCheckResults[count],
-						hasCycleAfterDetection = graph.cycleCheckUsingBFS();
-				log.info("hasCycle: "+hasCycle+", hasCycleAfterDetection: "+hasCycleAfterDetection);
-				if(hasCycleAfterDetection != hasCycle) {
-					Assert.fail("Cycle is"+(hasCycle?" ":" not ")+"present but detected as cycle is"+(hasCycleAfterDetection?" ":" not ")+"present in graph "+(count+1)+".");
-				}
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			boolean hasCycle = inputBFSCycleCheckResults[count],
+					hasCycleAfterDetection = graph.cycleCheckUsingBFS();
+			log.info("hasCycle: "+hasCycle+", hasCycleAfterDetection: "+hasCycleAfterDetection);
+			if(hasCycleAfterDetection != hasCycle) {
+				Assert.fail("Cycle is"+(hasCycle?" ":" not ")+"present but detected as cycle is"+(hasCycleAfterDetection?" ":" not ")+"present in graph "+(count+1)+".");
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
 	
 	@Test
-	public void testCyclyeCheckUsingDFS() {
+	public void testCycleCheckUsingDFS() {
 		
 		// Create an array of Vertices.
 		String verticesGroups[][] = {
@@ -712,33 +814,48 @@ public class CommonGraphMethods_Test {
 					"A", "B", "C", "D", "E"
 				},
 				{"A", "B", "C", "D", "E", "F"},
-				{"A", "B", "C", "D", "E", "F", "G"}
+				{"A", "B", "C", "D", "E", "F", "G"},
+				{"A", "B", "C", "D", "E", "F"},
+				{"A", "B", "C", "D", "E"}
 			};
 		// Create an array of Edges.
 		String edgesGroups[][]= {
 				{"A B", "D A", "E B", "C D", "D E"},
 				{"A B", "D A", "C B", "E D", "E F"},
-				{"A B", "C B", "C D", "D E", "F E", "C G"}
+				{"A B", "C B", "C D", "D E", "F E", "C G"},
+				{"B C", "C D", "D F", "E D", "E A", "A B"},
+				{"A B", "B C", "E A", "C D", "C E"}
 			};
-		GraphType gts[] = {GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.UNDIRECTED};
+		GraphType gts[] = {
+				GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.UNDIRECTED,
+				GraphType.DIRECTED, GraphType.DIRECTED
+		};
 		initializeGraphs(verticesGroups, edgesGroups, gts);
 		
-		boolean inputDFSCycleCheckResults[] = {true, false, false};
+		boolean inputDFSCycleCheckResults[] = {true, false, false, false, true};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
 			
-			if(!graph.isDirected()) {
-				boolean hasCycle = inputDFSCycleCheckResults[count],
-						hasCycleAfterDetection = graph.cycleCheckUsingDFS();
-				log.info("hasCycle: "+hasCycle+", hasCycleAfterDetection: "+hasCycleAfterDetection);
-				if(hasCycleAfterDetection != hasCycle) {
-					Assert.fail("Cycle is"+(hasCycle?" ":" not ")+"present but detected as cycle is"+(hasCycleAfterDetection?" ":" not ")+"present in graph "+(count+1)+".");
-				}
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			
+			boolean hasCycle = inputDFSCycleCheckResults[count],
+					hasCycleAfterDetection = graph.cycleCheckUsingDFS();
+			log.info("hasCycle: "+hasCycle+", hasCycleAfterDetection: "+hasCycleAfterDetection);
+			
+			if(hasCycleAfterDetection != hasCycle) {
+				Assert.fail("Cycle is"+(hasCycle?" ":" not ")+"present but detected as cycle is"+(hasCycleAfterDetection?" ":" not ")+"present in graph "+(count+1)+".");
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -762,10 +879,18 @@ public class CommonGraphMethods_Test {
 		
 		boolean inputBFSBipartiteCheckResults[] = {true, false, true};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			if(!graph.isDirected()) {
 				boolean isBipartite = inputBFSBipartiteCheckResults[count],
@@ -775,7 +900,7 @@ public class CommonGraphMethods_Test {
 					Assert.fail("Graph is"+(isBipartite?" ":" not")+" bipartite but detected as"+(isBipartiteAfterDetection?" ":" not")+"bipartite in graph "+(count+1)+".");
 				}
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
 	}
@@ -799,10 +924,18 @@ public class CommonGraphMethods_Test {
 		
 		boolean inputDFSBipartiteCheckResults[] = {true, false, true};
 		
-		int count = 0;
+		int count = 0, noOfTestCases = verticesGroups.length;
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
 			
 			if(!graph.isDirected()) {
 				boolean isBipartite = inputDFSBipartiteCheckResults[count],
@@ -812,8 +945,96 @@ public class CommonGraphMethods_Test {
 					Assert.fail("Graph is"+(isBipartite?" ":" not")+" bipartite but detected as"+(isBipartiteAfterDetection?" ":" not")+"bipartite in graph "+(count+1)+".");
 				}
 			}
-			count = (count+1)%3;
+			count = (count+1)%noOfTestCases;
 			log.info("\n");
 		}
+	}
+	
+	@Test
+	public void testTopoSortUsingDFS() {
+		// Create an array of Vertices.
+				String verticesGroups[][] = {
+						{"A", "B", "C", "D", "E"}
+					};
+				// Create an array of Edges.
+				String edgesGroups[][]= {
+						{"B A", "A C", "D C", "B D", "C E"}
+					};
+				GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
+				initializeGraphs(verticesGroups, edgesGroups, gts);
+				
+				String inputDFSTopoSortResults[][] = {
+						{"B", "D", "A", "C", "E"}
+				};
+				
+				log.info("Inside testTopoSortUsingDFS()");
+				int count = 0, noOfTestCases = verticesGroups.length;
+				for(Graph graph: graphs) {
+					log.info("For Graph "+(count+1)+":");
+					printGraphImplemetationType(graph);
+					
+					if(!graph.isDirected())
+						log.info("GraphType: Undirected");
+					else
+						log.info("GraphType: Directed");
+					
+					log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+					log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+					
+					String inputDFSTopoSortResult[] = inputDFSTopoSortResults[count];
+					List<Integer> actualDFSTopoSortResult = graph.performDFSTopologicalSorting();
+					List<Integer> expectedDFSTopoSortResult = graph.getListOfVertexIndices(inputDFSTopoSortResult);
+					
+					log.info("actualDFSTopoSortResult: "+actualDFSTopoSortResult);
+					log.info("expectedDFSTopoSortResult: "+expectedDFSTopoSortResult);
+					Assert.assertEquals(true, actualDFSTopoSortResult.equals(expectedDFSTopoSortResult));
+					
+					count = (count+1)%noOfTestCases;
+					log.info("\n");
+				}
+	}
+	
+	@Test
+	public void testTopoSortUsingBFS() {
+		// Create an array of Vertices.
+				String verticesGroups[][] = {
+						{"A", "B", "C", "D", "E"}
+					};
+				// Create an array of Edges.
+				String edgesGroups[][]= {
+						{"B A", "A C", "D C", "B D", "C E"}
+					};
+				GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
+				initializeGraphs(verticesGroups, edgesGroups, gts);
+				
+				String inputBFSTopoSortResults[][] = {
+						{"B", "A", "D", "C", "E"}
+				};
+				
+				log.info("Inside testTopoSortUsingDFS()");
+				int count = 0, noOfTestCases = verticesGroups.length;
+				for(Graph graph: graphs) {
+					log.info("For Graph "+(count+1)+":");
+					printGraphImplemetationType(graph);
+					
+					if(!graph.isDirected())
+						log.info("GraphType: Undirected");
+					else
+						log.info("GraphType: Directed");
+					
+					log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+					log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+					
+					String inputBFSTopoSortResult[] = inputBFSTopoSortResults[count];
+					List<Integer> actualBFSTopoSortResult = graph.performBFSTopologicalSorting();
+					List<Integer> expectedBFSTopoSortResult = graph.getListOfVertexIndices(inputBFSTopoSortResult);
+					
+					log.info("actualBFSTopoSortResult: "+actualBFSTopoSortResult);
+					log.info("expectedBFSTopoSortResult: "+expectedBFSTopoSortResult);
+					Assert.assertEquals(true, actualBFSTopoSortResult.equals(expectedBFSTopoSortResult));
+					
+					count = (count+1)%noOfTestCases;
+					log.info("\n");
+				}
 	}
 }

@@ -103,21 +103,33 @@ Directed
 {"B C", "C D", "D F", "E D", "E A", "A B"}
 Cycle is not present
 
+Graph 13:
+Directed
+{"A", "B", "C", "D", "E", "F", "G"}
+{"A B", "D B", "C B", "C A", "A D", "C D", "B E", "G D", "E F", "E G"}
+Cycle is not present
+
 Graph 14:
 Undirected
 {"A", "B", "C", "D", "E", "F", "G"}
 {"A B", "C B", "C D", "D E", "F E", "C G"}
 Bipartite
 
-Graph 14:
+Graph 15:
 Undirected
 {"A", "B", "C", "D", "E", "F", "G"}
 {"A B", "C B", "C D", "D E", "F E", "C G", "E A"}
-Bipartite
+Not Bipartite
 
-Graph 14:
+Graph 16:
 Undirected
 {"A", "B", "C", "D", "E", "F", "G"}
 {"A B", "C B", "C D", "D E", "F E", "C G", "F A}
-Not Bipartite
+Bipartite
 
+Graph 17:
+Directed
+{"A", "B", "C", "D", "E"}
+{"B A", "A C", "D C", "B D", "C E"}
+Topo sort dfs result: {"B", "D", "A", "C", "E"}
+Topo sort bfs result: {"B", "A", "D", "C", "E"}

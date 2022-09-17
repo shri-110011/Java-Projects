@@ -22,7 +22,9 @@ public class GraphUsingAdjacencyMatrix_Test {
 		
 		final int noOfTestCases = verticesGroups.length;
 		
-		int sizeOfAdjacencyMatrix[] = {10, 10, 10};
+		int sizeOfAdjacencyMatrices[] = new int[noOfTestCases];
+		Arrays.fill(sizeOfAdjacencyMatrices, 10);
+		
 		graphs = new ArrayList<GraphUsingAdjacencyMatrix>();
 		
 		int vgsLen = verticesGroups.length, egsLen = edgesGroups.length;
@@ -35,7 +37,7 @@ public class GraphUsingAdjacencyMatrix_Test {
 		}
 		
 		for(int i=0; i<noOfTestCases; i++) {
-			graphs.add(new GraphUsingAdjacencyMatrix(sizeOfAdjacencyMatrix[i], gts[i]));
+			graphs.add(new GraphUsingAdjacencyMatrix(sizeOfAdjacencyMatrices[i], gts[i]));
 			graphs.get(i).createGraph(verticesGroups[i], edgesGroups[i]);
 		}
 		

@@ -3,6 +3,7 @@ package algorithms.graph_algorithms;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
@@ -26,11 +27,14 @@ public abstract class Graph {
 	
 	protected boolean isDirected;
 	
-	protected int innerForLoopCountInBFS ,
+	protected int innerForLoopCountInBFS,
 	whileLoopCountInBFS, forLoopCountInDFS,
 	innerForLoopCountInBFSCycleChecker, whileLoopCountInBFSCycleChecker,
 	forLoopCountInDFSCycleChecker, innerForLoopCountInBFSBipartiteChecker
-	, whileLoopCountInBFSBipartiteChecker, forLoopCountInDFSBipartiteChecker;
+	, whileLoopCountInBFSBipartiteChecker, forLoopCountInDFSBipartiteChecker,
+	forLoopCountInDFSTopoSort, whileLoopCountInBFSTopoSort,
+	innerForLoopCountInBFSTopoSort, outerForLoopOfIndegrees,
+	innerForLoopOfIndegrees;
 	
 	static final Logger log = LogManager.getLogger(Graph.class.getName());
 	
@@ -272,26 +276,46 @@ public abstract class Graph {
 	
 	public boolean cycleCheckUsingBFS() {
 		
-		Queue<Integer[]> queue = new ArrayDeque<>();
-		int noOfVertices = getNoOfVertices();
-		boolean visitedNodes[] = new boolean[noOfVertices];
-		int componentCount = 0;
+		int noOfVertices = getNoOfVertices(),
+				componentCount = 0;
+		boolean hasCycle = false;
 		
-		for(int i=0; i<noOfVertices; i++) {
-			if(!visitedNodes[i]) {
-				componentCount++;
-				if(cycleCheckerUsingBFS(i, -1, queue, visitedNodes)) {
+		if(!isDirected) {
+			Queue<Integer[]> queue = new ArrayDeque<>();
+			boolean visitedNodes[] = new boolean[noOfVertices];
+			
+			for(int i=0; i<noOfVertices; i++) {
+				if(!visitedNodes[i]) {
+					queue.add(new Integer[] {i, -1});
+					visitedNodes[i] = true;
+					componentCount++;
+					hasCycle = cycleCheckerUsingBFS(queue, visitedNodes);
 					log.info("For component: "+componentCount);
 					log.debug("whileLoopCountInBFSCycleChecker: "+whileLoopCountInBFSCycleChecker);
 					log.debug("innerForLoopCountInBFSCycleChecker: "+innerForLoopCountInBFSCycleChecker);
-					return true;
+					
+					if(hasCycle)
+						return true;
 				}
-				log.info("For component: "+componentCount);
-				log.debug("whileLoopCountInBFSCycleChecker: "+whileLoopCountInBFSCycleChecker);
-				log.debug("innerForLoopCountInBFSCycleChecker: "+innerForLoopCountInBFSCycleChecker);
 			}
+			return false;
 		}
-		return false;
+		else {
+			Queue<Integer> queue = new ArrayDeque<>();
+			int inDegrees[] = getIndegrees();
+			for(int i=0; i<noOfVertices; i++) {
+				if(inDegrees[i] == 0) {
+					queue.add(i);
+				}
+			}
+			hasCycle = cycleCheckerUsingBFSForDirectedGraph(queue, inDegrees);
+			
+			log.debug("whileLoopCountInBFSCycleChecker: "+whileLoopCountInBFSCycleChecker);
+			log.debug("innerForLoopCountInBFSCycleChecker: "+innerForLoopCountInBFSCycleChecker);
+			
+			if(hasCycle) return true;
+			return false;
+		}
 	}
 	
 	public boolean cycleCheckUsingDFS() {
@@ -304,7 +328,18 @@ public abstract class Graph {
 		log.info("noOfVertices: "+noOfVertices);
 		for(int i=0; i<noOfVertices; i++) {
 			if(!visitedNodes[i]) {
-				if(cycleCheckerUsingDFS(i, -1, stack, visitedNodes)) {
+				boolean hasCycle;
+				stack.add(new Integer[] {i, -1});
+				visitedNodes[i] = true;
+				if(!isDirected) {
+					hasCycle = cycleCheckerUsingDFS(stack, visitedNodes);
+				}
+				else {
+					boolean dfsVisited[] = new boolean[noOfVertices];
+					dfsVisited[i] = true;
+					hasCycle = cycleCheckerUsingDFSForDirectedGraph(stack, visitedNodes, dfsVisited);
+				}
+				if(hasCycle) {
 					componentCount++;
 					log.info("For component: "+componentCount);
 					log.debug("forLoopCountInDFSCycleChecker: "+forLoopCountInDFSCycleChecker);
@@ -328,8 +363,11 @@ public abstract class Graph {
 		
 		for(int i=0; i<noOfVertices; i++) {
 			if(nodesColor[i]==0) {
+				queue.add(new Integer[] {i, -1});
+				nodesColor[i] = 1;
+				
 				componentCount++;
-				if(!bipartiteCheckerUsingBFS(i, -1, queue, nodesColor)) {
+				if(!bipartiteCheckerUsingBFS(queue, nodesColor)) {
 					log.info("For component: "+componentCount);
 					log.debug("whileLoopCountInBFSBipartiteChecker: "+whileLoopCountInBFSBipartiteChecker);
 					log.debug("innerForLoopCountInBFSBipartiteChecker: "+innerForLoopCountInBFSBipartiteChecker);
@@ -355,8 +393,11 @@ public abstract class Graph {
 		
 		for(int i=0; i<noOfVertices; i++) {
 			if(nodesColor[i]==0) {
+				stack.add(new Integer[] {i, -1});
+				nodesColor[i] = 1;
+				
 				componentCount++;
-				if(!bipartiteCheckerUsingDFS(i, -1, stack, nodesColor)) {
+				if(!bipartiteCheckerUsingDFS(stack, nodesColor)) {
 					log.info("For component: "+componentCount);
 					log.debug("forLoopCountInDFSBipartiteChecker: "+forLoopCountInDFSBipartiteChecker);
 					return false;
@@ -368,6 +409,66 @@ public abstract class Graph {
 			}
 		}
 		return true;
+	}
+	
+	public ArrayList<Integer> performDFSTopologicalSorting(int startNodeIdx) {
+		Stack<Integer> stack = new Stack<>();
+		int noOfVertices = getNoOfVertices();
+		boolean visitedNodes[] = new boolean[noOfVertices];
+		ArrayList<Integer> dfsTopoSortResult = new ArrayList<>();
+		int componentCount = 0;
+		
+		if(startNodeIdx >=0 && startNodeIdx<noOfVertices) {
+			if(!isDirected) {
+				return dfsTopoSortResult;
+			}
+			for(int i=startNodeIdx; i<noOfVertices+startNodeIdx; i++) {
+				int nodeIdx = i%noOfVertices;
+				if(!visitedNodes[nodeIdx]) {
+					visitedNodes[nodeIdx] = true;
+					getDFSTopologicalSortResult(nodeIdx, stack, visitedNodes, dfsTopoSortResult);
+					componentCount++;
+					log.info("For component: "+componentCount);
+					log.debug("forLoopCountInDFSTopoSort: "+forLoopCountInDFSTopoSort);
+				}
+			}
+		}
+		else {
+			throw new InvalidVertexIndexException(noOfVertices, startNodeIdx);
+		}
+		Collections.reverse(dfsTopoSortResult);
+		return dfsTopoSortResult;
+	}
+	
+	public ArrayList<Integer> performDFSTopologicalSorting() {
+		return performDFSTopologicalSorting(0);
+	}
+	
+	public ArrayList<Integer> performBFSTopologicalSorting() {
+		Queue<Integer> queue = new ArrayDeque<>();
+		int noOfVertices = getNoOfVertices();
+		ArrayList<Integer> bfsTopoSortResult = new ArrayList<>();
+		
+		if(!isDirected) {
+			log.info("whileLoopCountInBFSTopoSort: "+whileLoopCountInBFSTopoSort);
+			log.info("innerForLoopCountInBFSTopoSort: "+innerForLoopCountInBFSTopoSort);
+			return bfsTopoSortResult;
+		}
+		
+		int inDegrees[] = getIndegrees();
+		log.info("outerForLoopOfIndegrees: "+outerForLoopOfIndegrees);
+		log.info("innerForLoopOfIndegrees: "+innerForLoopOfIndegrees);
+		for(int i=0; i<noOfVertices; i++) {
+			if(inDegrees[i] == 0) {
+				queue.add(i);
+				bfsTopoSortResult.add(i);
+			}
+		}
+
+		getBFSTopologicalSortResult(queue, inDegrees, bfsTopoSortResult);
+		log.info("whileLoopCountInBFSTopoSort: "+whileLoopCountInBFSTopoSort);
+		log.info("innerForLoopCountInBFSTopoSort: "+innerForLoopCountInBFSTopoSort);
+		return bfsTopoSortResult;
 	}
 	
 	/* createGraph(String verticesNames[], String  connections[]) will
@@ -396,12 +497,21 @@ public abstract class Graph {
 	
 	abstract protected void getDFSResult(int curNodeIdx, Stack<Integer> queue, boolean visitedNodes[], ArrayList<Integer> bfsResult);
 	
-	abstract protected boolean cycleCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, boolean visitedNodes[]);
+	abstract protected boolean cycleCheckerUsingBFS(Queue<Integer[]> queue, boolean visitedNodes[]);
 	
-	abstract protected boolean cycleCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, boolean visitedNodes[]);
+	abstract protected boolean cycleCheckerUsingDFS(Stack<Integer[]> stack, boolean visitedNodes[]);
 	
-	abstract protected boolean bipartiteCheckerUsingBFS(int curNodeIdx, int prevNodeIdx, Queue<Integer[]> queue, int nodesColor[]);
+	abstract protected boolean bipartiteCheckerUsingBFS(Queue<Integer[]> queue, int nodesColor[]);
 	
-	abstract protected boolean bipartiteCheckerUsingDFS(int curNodeIdx, int prevNodeIdx, Stack<Integer[]> stack, int nodesColor[]);
+	abstract protected boolean bipartiteCheckerUsingDFS(Stack<Integer[]> stack, int nodesColor[]);
 	
+	abstract protected boolean cycleCheckerUsingDFSForDirectedGraph(Stack<Integer[]> stack, boolean visitedNodes[], boolean dfsVisited[]);
+
+	abstract protected void getDFSTopologicalSortResult(int curNodeIdx, Stack<Integer> stack, boolean visitedNodes[], ArrayList<Integer> dfsTopoSortResult);
+
+	abstract protected int[] getIndegrees();
+	
+	abstract protected void getBFSTopologicalSortResult(Queue<Integer> queue, int inDegrees[], ArrayList<Integer> bfsTopoSortResult);
+
+	abstract protected boolean cycleCheckerUsingBFSForDirectedGraph(Queue<Integer> queue, int inDegrees[]);
 }

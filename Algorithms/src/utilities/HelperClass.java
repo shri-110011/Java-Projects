@@ -32,6 +32,15 @@ public class HelperClass {
 		System.out.print("]");
 		System.out.println();
 	}
+	
+	public static int max(int i, int j) {
+		if(i>j) {
+			return i;
+		}
+		else {
+			return j;
+		}
+	}
 
 	public static void swap(int a[], int swap_pos1, int swap_pos2) {
 		int temp = a[swap_pos1];
