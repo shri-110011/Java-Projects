@@ -48,8 +48,8 @@ public class CollectionsAlgo2 {
 		Collections.sort(al);
 		System.out.println("al after sorting: "+al);
 		MyComp myComp = new MyComp();
-		int pos = Collections.binarySearch(al, "B");
-		System.out.println(myComp.compare(al.get(1), al.get(0)));
+		int pos = Collections.binarySearch(al, "C");
+		System.out.println(myComp.compare(al.get(0), al.get(1)));
 		System.out.println("pos: "+pos);
 		
 		System.out.println("-----------------------");

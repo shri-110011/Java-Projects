@@ -16,6 +16,7 @@ import algorithms.graph_algorithms.graph_exceptions.InvalidEdgeException;
 import algorithms.graph_algorithms.graph_exceptions.InvalidVertexIndexException;
 import algorithms.graph_algorithms.graph_exceptions.InvalidVertexNameException;
 import algorithms.graph_algorithms.graph_exceptions.MaxLimitForVerticesReachedException;
+import algorithms.graph_algorithms.graph_exceptions.MethodNotSupportedException;
 
 public abstract class Graph {
 	
@@ -25,7 +26,7 @@ public abstract class Graph {
 	
 	private int noOfVerticesLimit=-1;
 	
-	protected boolean isDirected;
+	protected boolean isDirected, hasWeight;
 	
 	protected int innerForLoopCountInBFS,
 	whileLoopCountInBFS, forLoopCountInDFS,
@@ -34,7 +35,10 @@ public abstract class Graph {
 	, whileLoopCountInBFSBipartiteChecker, forLoopCountInDFSBipartiteChecker,
 	forLoopCountInDFSTopoSort, whileLoopCountInBFSTopoSort,
 	innerForLoopCountInBFSTopoSort, outerForLoopOfIndegrees,
-	innerForLoopOfIndegrees;
+	innerForLoopOfIndegrees, whileLoopCountInFindSDPWeights, forLoopCountInFindSDPWeights,
+	outerForLoopCountInFindSDPWeightsInDAG, innerForLoopCountInFindSDPWeightsInDAG,
+	whileLoopCountInFindSDPWeightsUsingDijkstra, forLoopCountInFindSDPWeightsUsingDijkstra
+	;
 	
 	static final Logger log = LogManager.getLogger(Graph.class.getName());
 	
@@ -471,6 +475,29 @@ public abstract class Graph {
 		return bfsTopoSortResult;
 	}
 	
+	public int[] getSDPWeightsUsingBFS(int srcIdx) {
+		log.info("srcIdx: "+srcIdx);
+		return findSDPWeightsUsingBFS(srcIdx);
+	}
+	
+	public int[] getSDPWeightsInDAG(int srcIdx) {
+		boolean hasCycle = cycleCheckUsingDFS();
+		
+		if(hasCycle) {
+			throw new MethodNotSupportedException("getSDPWeightsInDAG", "cyclic graph");
+		}
+		else {
+			ArrayList<Integer> topoSortResult = performDFSTopologicalSorting();
+			return findSDPWeightsInDAG(srcIdx, topoSortResult);
+		}
+		
+	}
+	
+	public int[] getSDPWeightsUsingDijkstra(int srcIdx) {
+		log.info("srcIdx: "+srcIdx);
+		return findSDPWeightsUsingDijkstra(srcIdx);
+	}
+	
 	/* createGraph(String verticesNames[], String  connections[]) will
 	 * create an undirected graph.
 	 * 
@@ -514,4 +541,10 @@ public abstract class Graph {
 	abstract protected void getBFSTopologicalSortResult(Queue<Integer> queue, int inDegrees[], ArrayList<Integer> bfsTopoSortResult);
 
 	abstract protected boolean cycleCheckerUsingBFSForDirectedGraph(Queue<Integer> queue, int inDegrees[]);
+
+	abstract protected int[] findSDPWeightsUsingBFS(int srcIdx);
+	
+	abstract protected int[] findSDPWeightsInDAG(int srcIdx, ArrayList<Integer> topoSortResult);
+
+	abstract protected int[] findSDPWeightsUsingDijkstra(int srcIdx);
 }

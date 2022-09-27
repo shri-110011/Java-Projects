@@ -1,5 +1,7 @@
 package test_algorithms.test_subsequences_algorithms;
 
+import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -121,6 +123,40 @@ public class LongestCommonSubsequence_Test {
 			System.out.println();
 		}
 		
+	}
+	
+	@Test
+	public void testPrintLCS() {
+		String inputArrayOfStringPairs[][] = {
+				{"abcd", "ijac"},
+				{"", ""},
+				{"abbcdebbcd", "bcaaedcd"},
+				{"abghcef", "aghef"},
+				{"abcd", "bd"}
+		};
+		
+		String expectedResults[][] = {
+				{"ac"},
+				{},
+				{"bcecd", "bcdcd"},
+				{"aghef"},
+				{"bd"}
+		};
+		
+		LongestCommonSubsequence lcs = new LongestCommonSubsequence();
+		int count = 0;
+		System.out.println("Inside testPrintLCS():");
+		for(String stringPair[]: inputArrayOfStringPairs) {
+			System.out.println("String pair: "+(count+1));
+			ArrayList<String> actualListOfLCS = lcs.printLCS(stringPair[0],stringPair[1]);
+			
+			Assert.assertEquals(expectedResults[count].length, actualListOfLCS.size());
+			for(String commonStr:expectedResults[count]) {
+				Assert.assertEquals(true, actualListOfLCS.contains(commonStr));
+			}
+			count++;
+			System.out.println();
+		}
 	}
 
 

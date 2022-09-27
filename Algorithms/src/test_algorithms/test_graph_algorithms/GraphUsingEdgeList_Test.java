@@ -1,4 +1,4 @@
-package test_alogorithms.test_graph_algorithms;
+package test_algorithms.test_graph_algorithms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,8 @@ public class GraphUsingEdgeList_Test {
 	
 	static final Logger log = LogManager.getLogger(GraphUsingEdgeList_Test.class.getName());
 	
-	public static List<GraphUsingEdgeList> initializeGraphUsingEdgeList(String verticesGroups[][], String edgesGroups[][], GraphType gts[] ) {
+	public static List<GraphUsingEdgeList> initializeGraphUsingEdgeList(String verticesGroups[][], 
+			String edgesGroups[][], GraphType gts[], boolean ...hasWeights) {
 
 		final int noOfTestCases = verticesGroups.length;
 		
@@ -36,8 +37,12 @@ public class GraphUsingEdgeList_Test {
 			Assert.fail("Length of verticesGroups: "+vgsLen+" doesn't match the noOfTestCases: "+noOfTestCases);;
 		}
 		
+		if(hasWeights.length == 0) {
+			hasWeights = new boolean[noOfTestCases];
+		}
+		
 		for(int i=0; i<noOfTestCases; i++) {
-			graphs.add(new GraphUsingEdgeList(gts[i]));
+			graphs.add(new GraphUsingEdgeList(gts[i], hasWeights[i]));
 			graphs.get(i).createGraph(verticesGroups[i], edgesGroups[i]);
 		}
 		

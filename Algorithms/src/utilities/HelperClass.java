@@ -1,8 +1,13 @@
 package utilities;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import test_algorithms.test_sorting_algorithms.HeapSort_Test;
+
 public class HelperClass {
+	
+	static final Logger log = LogManager.getLogger(HelperClass.class.getName());
 	
 	public static int[] concatenateArrays(int a[], int b[]) {
 		
@@ -23,14 +28,15 @@ public class HelperClass {
 	}
 	
 	public static void displayArray(int arr[]) {
-		System.out.println("Displaying array: ");
-		System.out.print("[");
+		log.info("Displaying array: ");
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
 		for(int i=0;i<arr.length;i++) {
-			System.out.print(arr[i]);
-			if(i!=arr.length-1) System.out.print(", ");
+			sb.append(arr[i]);
+			if(i!=arr.length-1) sb.append(", ");
 		}
-		System.out.print("]");
-		System.out.println();
+		sb.append("]");
+		log.info(sb);
 	}
 	
 	public static int max(int i, int j) {

@@ -1,4 +1,4 @@
-package test_alogorithms.test_graph_algorithms;
+package test_algorithms.test_graph_algorithms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,13 +22,14 @@ public class CommonGraphMethods_Test {
 	
 	List<Graph> graphs;
 	
-	public void initializeGraphs(String verticesGroups[][], String edgesGroups[][], GraphType gts[] ) {
+	public void initializeGraphs(String verticesGroups[][], String edgesGroups[][], GraphType gts[], boolean ...hasWeights) {
 		
 		graphs = new ArrayList<>();
 		
-		graphs.addAll(GraphUsingEdgeList_Test.initializeGraphUsingEdgeList(verticesGroups, edgesGroups, gts));
-		graphs.addAll(GraphUsingAdjacencyMatrix_Test.initializeGraphUsingAdjacencyMatrix(verticesGroups, edgesGroups, gts));
-		graphs.addAll(GraphUsingAdjacenyList_Test.initializeGraphUsingAdjacencyList(verticesGroups, edgesGroups, gts));
+		graphs.addAll(GraphUsingEdgeList_Test.initializeGraphUsingEdgeList(verticesGroups, edgesGroups, gts, hasWeights));
+		graphs.addAll(GraphUsingAdjacencyMatrix_Test.initializeGraphUsingAdjacencyMatrix(verticesGroups, edgesGroups, gts, hasWeights));
+		graphs.addAll(GraphUsingAdjacenyList_Test.initializeGraphUsingAdjacencyList(verticesGroups, edgesGroups, gts, hasWeights));
+	
 	}
 	
 	public static void printGraphImplemetationType(Graph graph) {
@@ -782,6 +783,8 @@ public class CommonGraphMethods_Test {
 		boolean inputBFSCycleCheckResults[] = {true, false, true, true, false, true};
 		
 		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testCycleCheckUsingBFS()");
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
@@ -835,6 +838,8 @@ public class CommonGraphMethods_Test {
 		boolean inputDFSCycleCheckResults[] = {true, false, false, false, true};
 		
 		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testCycleCheckUsingDFS()");
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
@@ -880,6 +885,8 @@ public class CommonGraphMethods_Test {
 		boolean inputBFSBipartiteCheckResults[] = {true, false, true};
 		
 		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testBipartiteCheckUsingBFS()");
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
@@ -925,6 +932,8 @@ public class CommonGraphMethods_Test {
 		boolean inputDFSBipartiteCheckResults[] = {true, false, true};
 		
 		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testBipartiteCheckUsingDFS()");
 		for(Graph graph: graphs) {
 			log.info("For Graph "+(count+1)+":");
 			printGraphImplemetationType(graph);
@@ -953,88 +962,255 @@ public class CommonGraphMethods_Test {
 	@Test
 	public void testTopoSortUsingDFS() {
 		// Create an array of Vertices.
-				String verticesGroups[][] = {
-						{"A", "B", "C", "D", "E"}
-					};
-				// Create an array of Edges.
-				String edgesGroups[][]= {
-						{"B A", "A C", "D C", "B D", "C E"}
-					};
-				GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
-				initializeGraphs(verticesGroups, edgesGroups, gts);
-				
-				String inputDFSTopoSortResults[][] = {
-						{"B", "D", "A", "C", "E"}
-				};
-				
-				log.info("Inside testTopoSortUsingDFS()");
-				int count = 0, noOfTestCases = verticesGroups.length;
-				for(Graph graph: graphs) {
-					log.info("For Graph "+(count+1)+":");
-					printGraphImplemetationType(graph);
-					
-					if(!graph.isDirected())
-						log.info("GraphType: Undirected");
-					else
-						log.info("GraphType: Directed");
-					
-					log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
-					log.info("Edges: "+Arrays.asList(edgesGroups[count]));
-					
-					String inputDFSTopoSortResult[] = inputDFSTopoSortResults[count];
-					List<Integer> actualDFSTopoSortResult = graph.performDFSTopologicalSorting();
-					List<Integer> expectedDFSTopoSortResult = graph.getListOfVertexIndices(inputDFSTopoSortResult);
-					
-					log.info("actualDFSTopoSortResult: "+actualDFSTopoSortResult);
-					log.info("expectedDFSTopoSortResult: "+expectedDFSTopoSortResult);
-					Assert.assertEquals(true, actualDFSTopoSortResult.equals(expectedDFSTopoSortResult));
-					
-					count = (count+1)%noOfTestCases;
-					log.info("\n");
-				}
+		String verticesGroups[][] = {
+				{"A", "B", "C", "D", "E"}
+			};
+		// Create an array of Edges.
+		String edgesGroups[][]= {
+				{"B A", "A C", "D C", "B D", "C E"}
+			};
+		GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
+		initializeGraphs(verticesGroups, edgesGroups, gts);
+		
+		String inputDFSTopoSortResults[][] = {
+				{"B", "D", "A", "C", "E"}
+		};
+		
+		log.info("Inside testTopoSortUsingDFS()");
+		int count = 0, noOfTestCases = verticesGroups.length;
+		for(Graph graph: graphs) {
+			log.info("For Graph "+(count+1)+":");
+			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			String inputDFSTopoSortResult[] = inputDFSTopoSortResults[count];
+			List<Integer> actualDFSTopoSortResult = graph.performDFSTopologicalSorting();
+			List<Integer> expectedDFSTopoSortResult = graph.getListOfVertexIndices(inputDFSTopoSortResult);
+			
+			log.info("actualDFSTopoSortResult: "+actualDFSTopoSortResult);
+			log.info("expectedDFSTopoSortResult: "+expectedDFSTopoSortResult);
+			Assert.assertEquals(true, actualDFSTopoSortResult.equals(expectedDFSTopoSortResult));
+			
+			count = (count+1)%noOfTestCases;
+			log.info("\n");
+		}
 	}
 	
 	@Test
 	public void testTopoSortUsingBFS() {
 		// Create an array of Vertices.
-				String verticesGroups[][] = {
-						{"A", "B", "C", "D", "E"}
-					};
-				// Create an array of Edges.
-				String edgesGroups[][]= {
-						{"B A", "A C", "D C", "B D", "C E"}
-					};
-				GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
-				initializeGraphs(verticesGroups, edgesGroups, gts);
-				
-				String inputBFSTopoSortResults[][] = {
-						{"B", "A", "D", "C", "E"}
-				};
-				
-				log.info("Inside testTopoSortUsingDFS()");
-				int count = 0, noOfTestCases = verticesGroups.length;
-				for(Graph graph: graphs) {
-					log.info("For Graph "+(count+1)+":");
-					printGraphImplemetationType(graph);
-					
-					if(!graph.isDirected())
-						log.info("GraphType: Undirected");
-					else
-						log.info("GraphType: Directed");
-					
-					log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
-					log.info("Edges: "+Arrays.asList(edgesGroups[count]));
-					
-					String inputBFSTopoSortResult[] = inputBFSTopoSortResults[count];
-					List<Integer> actualBFSTopoSortResult = graph.performBFSTopologicalSorting();
-					List<Integer> expectedBFSTopoSortResult = graph.getListOfVertexIndices(inputBFSTopoSortResult);
-					
-					log.info("actualBFSTopoSortResult: "+actualBFSTopoSortResult);
-					log.info("expectedBFSTopoSortResult: "+expectedBFSTopoSortResult);
-					Assert.assertEquals(true, actualBFSTopoSortResult.equals(expectedBFSTopoSortResult));
-					
-					count = (count+1)%noOfTestCases;
-					log.info("\n");
-				}
+		String verticesGroups[][] = {
+				{"A", "B", "C", "D", "E"}
+			};
+		// Create an array of Edges.
+		String edgesGroups[][]= {
+				{"B A", "A C", "D C", "B D", "C E"}
+			};
+		GraphType gts[] = {GraphType.DIRECTED, GraphType.DIRECTED, GraphType.DIRECTED};
+		initializeGraphs(verticesGroups, edgesGroups, gts);
+		
+		String inputBFSTopoSortResults[][] = {
+				{"B", "A", "D", "C", "E"}
+		};
+		
+		log.info("Inside testTopoSortUsingDFS()");
+		int count = 0, noOfTestCases = verticesGroups.length;
+		for(Graph graph: graphs) {
+			log.info("For Graph "+(count+1)+":");
+			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			String inputBFSTopoSortResult[] = inputBFSTopoSortResults[count];
+			List<Integer> actualBFSTopoSortResult = graph.performBFSTopologicalSorting();
+			List<Integer> expectedBFSTopoSortResult = graph.getListOfVertexIndices(inputBFSTopoSortResult);
+			
+			log.info("actualBFSTopoSortResult: "+actualBFSTopoSortResult);
+			log.info("expectedBFSTopoSortResult: "+expectedBFSTopoSortResult);
+			Assert.assertEquals(true, actualBFSTopoSortResult.equals(expectedBFSTopoSortResult));
+			
+			count = (count+1)%noOfTestCases;
+			log.info("\n");
+		}
+	}
+	
+	@Test
+	public void testFindSDPWeightsUsingBFS() {
+		// Create an array of Vertices.
+		String verticesGroups[][] = {
+				{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+				{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+				{"A", "B", "C", "D"},
+				{"A", "B", "C", "D", "E", "F", "G"}
+			};
+		// Create an array of Edges.
+		String edgesGroups[][]= {
+				{"A B 3", "B C 4", "C A 8", "E B 4", "C D 1", "E F 1", "D E 3", "D F 2", "H F 5", "F G 2", "G I 1", "I H 2", "E H 6"},
+				{"A B", "B D", "D A", "D E", "B C", "C G", "G F", "F E", "G H", "I G", "H I"},
+				{"A B 2", "D A 6", "B C 2", "C D 1"},
+				{"A B 5", "A C 1", "C E 1", "E F 1", "B D 1", "D G 2", "F B 1", "F D 3"}
+			
+		};
+		GraphType gts[] = {GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.DIRECTED, 
+				GraphType.DIRECTED};
+		boolean hasWeights[] = {true, false, true, true};
+		initializeGraphs(verticesGroups, edgesGroups, gts, hasWeights);
+		
+		int srcIndices[] = {0,0,0,0};
+		
+		int sdpWeightsArray[][] = {
+				{0, 3, 7, 8, 7, 8, 10, 13, 11},
+				{0, 1, 2, 1, 2, 3, 3, 4, 4},
+				{0, 2, 4, 5},
+				{0, 4, 1, 5, 2, 3, 7}
+		};
+		
+		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testFindSDPWeightsUsingBFS()");
+		for(Graph graph: graphs) {
+			log.info("For Graph "+(count+1)+":");
+			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			int expectedSDPWeights[] = sdpWeightsArray[count],
+					actualSDPWeights[] = graph.getSDPWeightsUsingBFS(srcIndices[count]);
+			
+			log.info("expectedSDPWeights: "+Arrays.toString(expectedSDPWeights));
+			log.info("actualSDPWeights: "+Arrays.toString(actualSDPWeights));
+			
+			Assert.assertArrayEquals(expectedSDPWeights, actualSDPWeights);
+			
+			count = (count+1)%noOfTestCases;
+			log.info("\n");
+		}
+	}
+	
+	@Test
+	public void testFindSDPWeightsInDAG() {
+		// Create an array of Vertices.
+		String verticesGroups[][] = {
+				{"A", "B", "C", "D", "E", "F", "G"}
+			};
+		// Create an array of Edges.
+		String edgesGroups[][]= {
+				{"A B 5", "A C 1", "C E 1", "E F 1", "B D 1", "D G 2", "F B 1", "F D 3"}
+			
+		};
+		GraphType gts[] = {GraphType.DIRECTED};
+		boolean hasWeights[] = {true};
+		initializeGraphs(verticesGroups, edgesGroups, gts, hasWeights);
+		
+		int srcIndices[] = {0,0,0,0};
+		
+		int sdpWeightsArray[][] = {
+				{0, 4, 1, 5, 2, 3, 7}
+		};
+		
+		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testFindSDPWeightsUsingBFS()");
+		for(Graph graph: graphs) {
+			log.info("For Graph "+(count+1)+":");
+			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			int expectedSDPWeights[] = sdpWeightsArray[count],
+					actualSDPWeights[] = graph.getSDPWeightsInDAG(srcIndices[count]);
+			
+			log.info("expectedSDPWeights: "+Arrays.toString(expectedSDPWeights));
+			log.info("actualSDPWeights: "+Arrays.toString(actualSDPWeights));
+			
+			Assert.assertArrayEquals(expectedSDPWeights, actualSDPWeights);
+			
+			count = (count+1)%noOfTestCases;
+			log.info("\n");
+		}
+	}
+	
+	@Test
+	public void testFindSDPWeightsUsingDijkstra() {
+		// Create an array of Vertices.
+		String verticesGroups[][] = {
+				{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+				{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+				{"A", "B", "C", "D"},
+				{"A", "B", "C", "D", "E", "F", "G"}
+			};
+		// Create an array of Edges.
+		String edgesGroups[][]= {
+				{"A B 3", "B C 4", "C A 8", "E B 4", "C D 1", "E F 1", "D E 3", "D F 2", "H F 5", "F G 2", "G I 1", "I H 2", "E H 6"},
+				{"A B", "B D", "D A", "D E", "B C", "C G", "G F", "F E", "G H", "I G", "H I"},
+				{"A B 2", "D A 6", "B C 2", "C D 1"},
+				{"A B 5", "A C 1", "C E 1", "E F 1", "B D 1", "D G 2", "F B 1", "F D 3"}
+			
+		};
+		GraphType gts[] = {GraphType.UNDIRECTED, GraphType.UNDIRECTED, GraphType.DIRECTED, 
+				GraphType.DIRECTED};
+		boolean hasWeights[] = {true, false, true, true};
+		initializeGraphs(verticesGroups, edgesGroups, gts, hasWeights);
+		
+		int srcIndices[] = {0,0,0,0};
+		
+		int sdpWeightsArray[][] = {
+				{0, 3, 7, 8, 7, 8, 10, 13, 11},
+				{0, 1, 2, 1, 2, 3, 3, 4, 4},
+				{0, 2, 4, 5},
+				{0, 4, 1, 5, 2, 3, 7}
+		};
+		
+		int count = 0, noOfTestCases = verticesGroups.length;
+		
+		log.info("Inside testFindSDPWeightsUsingDijkstra()");
+		for(Graph graph: graphs) {
+			log.info("For Graph "+(count+1)+":");
+			printGraphImplemetationType(graph);
+			
+			if(!graph.isDirected())
+				log.info("GraphType: Undirected");
+			else
+				log.info("GraphType: Directed");
+			
+			log.info("Vertices: "+Arrays.asList(verticesGroups[count]));
+			log.info("Edges: "+Arrays.asList(edgesGroups[count]));
+			
+			int expectedSDPWeights[] = sdpWeightsArray[count],
+					actualSDPWeights[] = graph.getSDPWeightsUsingDijkstra(srcIndices[count]);
+			
+			log.info("expectedSDPWeights: "+Arrays.toString(expectedSDPWeights));
+			log.info("actualSDPWeights: "+Arrays.toString(actualSDPWeights));
+			
+			Assert.assertArrayEquals(expectedSDPWeights, actualSDPWeights);
+			
+			count = (count+1)%noOfTestCases;
+			log.info("\n");
+		}
 	}
 }

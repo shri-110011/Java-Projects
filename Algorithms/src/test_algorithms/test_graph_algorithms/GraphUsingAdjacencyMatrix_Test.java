@@ -1,4 +1,4 @@
-package test_alogorithms.test_graph_algorithms;
+package test_algorithms.test_graph_algorithms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,8 @@ public class GraphUsingAdjacencyMatrix_Test {
 	
 	static List<GraphUsingAdjacencyMatrix> graphs;
 	
-	public static List<GraphUsingAdjacencyMatrix> initializeGraphUsingAdjacencyMatrix(String verticesGroups[][], String edgesGroups[][], GraphType gts[] ) {
+	public static List<GraphUsingAdjacencyMatrix> initializeGraphUsingAdjacencyMatrix(
+			String verticesGroups[][], String edgesGroups[][], GraphType gts[], boolean ...hasWeights ) {
 		
 		final int noOfTestCases = verticesGroups.length;
 		
@@ -36,8 +37,12 @@ public class GraphUsingAdjacencyMatrix_Test {
 			Assert.fail("Length of verticesGroups: "+vgsLen+" doesn't match the noOfTestCases: "+noOfTestCases);;
 		}
 		
+		if(hasWeights.length == 0) {
+			hasWeights = new boolean[noOfTestCases];
+		}
+		
 		for(int i=0; i<noOfTestCases; i++) {
-			graphs.add(new GraphUsingAdjacencyMatrix(sizeOfAdjacencyMatrices[i], gts[i]));
+			graphs.add(new GraphUsingAdjacencyMatrix(sizeOfAdjacencyMatrices[i], gts[i], hasWeights[i]));
 			graphs.get(i).createGraph(verticesGroups[i], edgesGroups[i]);
 		}
 		

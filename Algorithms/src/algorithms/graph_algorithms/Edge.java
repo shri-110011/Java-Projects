@@ -4,11 +4,18 @@ public class Edge {
 	private int endPoint1, endPoint2;
 	
 	private int weight = 1;
-	private boolean isDirected;
+	private boolean isDirected, hasWeight;
 	
 	public Edge(int ep1, int ep2) {
 		endPoint1 = ep1;
 		endPoint2 = ep2;
+	}
+	
+	public Edge(int ep1, int ep2, int weight) {
+		endPoint1 = ep1;
+		endPoint2 = ep2;
+		this.weight = weight;
+		this.hasWeight = true;
 	}
 
 	public int getEndPoint1() {
@@ -35,15 +42,26 @@ public class Edge {
 		this.weight = weight;
 	}
 
-	public boolean isDirected() {
+	public boolean getIsDirected() {
 		return isDirected;
 	}
 
-	public void setDirected(boolean isDirected) {
+	public void setIsDirected(boolean isDirected) {
 		this.isDirected = isDirected;
+	}
+	
+	public boolean getHasWeight() {
+		return hasWeight;
+	}
+	
+	public void setHasWeight(boolean hasWeight) {
+		this.hasWeight = hasWeight;
 	}
 
 	public String toString() {
-		return "{"+endPoint1+" --"+(isDirected?"> ":" ")+endPoint2+"}";
+		if(!hasWeight)
+			return "{"+endPoint1+" --"+(isDirected?"> ":" ")+endPoint2+"}";
+		else
+			return "{"+endPoint1+" --"+(isDirected?"> ":" ")+endPoint2+", "+weight+"}";
 	}
 }

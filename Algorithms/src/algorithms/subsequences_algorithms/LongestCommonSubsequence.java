@@ -1,13 +1,53 @@
 package algorithms.subsequences_algorithms;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Queue;
 
 import utilities.HelperClass;
 
+class CharCoords {
+	private int rowIdx, colIdx;
+	private String psf;
+	
+	public CharCoords(int rowIdx, int colIdx , String psf) {
+		this.rowIdx = rowIdx;
+		this.colIdx = colIdx;
+		this.psf = psf;
+	}
+
+	public int getRowIdx() {
+		return rowIdx;
+	}
+
+	public int getColIdx() {
+		return colIdx;
+	}
+
+	public String getPsf() {
+		return psf;
+	}
+
+	public void setRowIdx(int rowIdx) {
+		this.rowIdx = rowIdx;
+	}
+
+	public void setColIdx(int colIdx) {
+		this.colIdx = colIdx;
+	}
+
+	public void setPsf(String psf) {
+		this.psf = psf;
+	}
+	
+	
+}
 public class LongestCommonSubsequence {
 	
 	private int noOfRecursiveCalls, outerForLoopCount, 
-	innerForLoopCount;
+	innerForLoopCount, dp[][], outerWhileLoopCount,
+	innerWhileLoopCount;
 
 	/* The worst case time complexity of findLCSUsingRecursion()
 	 * is O(2^(m+n)-1) and this occurs when all the characters
@@ -216,6 +256,7 @@ public class LongestCommonSubsequence {
 			System.out.println(Arrays.toString(row));
 		}
 		
+		this.dp = dp;
 		return lenOfLCS;
 	}
 	
@@ -240,7 +281,7 @@ public class LongestCommonSubsequence {
 		for(int row[]: dp) {
 			System.out.println(Arrays.toString(row));
 		}
-		
+		this.dp = dp;
 		return lenOfLCS;
 	}
 	
@@ -270,9 +311,128 @@ public class LongestCommonSubsequence {
 		for(int row[]: dp) {
 			System.out.println(Arrays.toString(row));
 		}
-		
 		return lenOfLCS;
 	
+	}
+	
+	public ArrayList<String> printLCS(String str1, String str2) {
+		
+		char ch1[] = str1.toCharArray(), ch2[] = str2.toCharArray();
+		
+		int lengthOfLCS = getLCSUsingIterationAndTabulation(str1, str2);
+		System.out.println("lengthOfLCS: "+lengthOfLCS);
+		
+		int str1Len = ch1.length, str2Len = ch2.length;
+		
+		ArrayList<String> al = new ArrayList<>();
+		
+		if(str1Len == 0 || str2Len == 0)
+			return al;
+		
+		int lcsLen = dp[str1Len-1][str2Len-1], rowIdx,
+				colIdx;
+		boolean isVisited[][] = 
+				new boolean[str1Len][str2Len];
+		Queue<CharCoords> queue = new ArrayDeque<>();
+		for(int i=str2Len-1; i>=0; i--) {
+			if(dp[str1Len-1][i] == lcsLen) {
+				queue.add(new CharCoords(str1Len-1, i, ""));
+			}
+				
+		}
+		int count=1;
+		while(!queue.isEmpty()) {
+			outerWhileLoopCount++;
+			CharCoords charCoords = queue.remove();
+			colIdx = charCoords.getColIdx();
+			rowIdx = charCoords.getRowIdx();
+			StringBuffer sbuf = new StringBuffer(charCoords.getPsf());
+			
+			/* flag is there to indicate if the control has
+			 * gone inside the while loop or not and if the 
+			 * while loop has been terminated due to its
+			 * exit condition or not.
+			 * If and only the while loop has been 
+			 * terminated due to its exit condition then 
+			 * only flag will be true.
+			 * 
+			 * foundNewElement will be true if any position
+			 * in the 2-D array dp[][] has been found where
+			 * the ch1[rowIdx] = ch2[colIdx].
+			 * 
+			 * foundNewElement is essential for the case
+			 * when a branch in a cell gets created.
+			 * 
+			 * This foundNewElement along with isVisited[][]
+			 * will prevent many paths prematurely(i.e.
+			 * as soon a cell that has been visited but 
+			 * foundNewElement is false), that 
+			 * will give the same LCS.
+			 * 
+			 */
+			boolean flag = false, foundNewElement = false;
+			while(rowIdx!=-1 && colIdx!=-1) {
+				innerWhileLoopCount++;
+				flag = true;
+				if(isVisited[rowIdx][colIdx] && !foundNewElement) {
+					flag = false;
+					break;
+				}
+				isVisited[rowIdx][colIdx] = true;
+				if(ch1[rowIdx] == ch2[colIdx]) {
+					sbuf.insert(0, ch1[rowIdx]);
+					rowIdx--; colIdx--;
+					foundNewElement = true;
+				}
+				else {
+					if(rowIdx-1 == -1) {
+						colIdx--;
+					}
+					else if(colIdx-1 == -1) {
+						rowIdx--;
+					}
+					else {
+						if(dp[rowIdx-1][colIdx] > dp[rowIdx][colIdx-1]) {
+							rowIdx--;
+						}
+						else if(dp[rowIdx-1][colIdx] < dp[rowIdx][colIdx-1]) {
+							colIdx--;
+						}
+						else {
+//							System.out.println(rowIdx+"#"+colIdx);
+							/* Here we have got a coordinate where 
+							 * ch1[rowIdx] != ch2[colIdx]
+							 * and dp[rowIdx-1][colIdx] = dp[rowIdx][colIdx-1].
+							 * 
+							 * So we store the coords of the cell just above the 
+							 * one we are now and then move to the left cell. 
+							 * 
+							 */
+							queue.add(new CharCoords(rowIdx-1, colIdx, sbuf.toString()));
+							colIdx--;
+						}
+					}
+				}
+			}
+			if(flag) {
+				// Here we have our first LCS ready in sbuf.
+				System.out.println("LCS "+count+": "+sbuf.toString());
+				al.add(sbuf.toString());
+				count++;
+				flag = false;
+			}
+			/*
+			 * We need to reset foundNewElement to false
+			 * and clear sbuf so that more solutions using
+			 * queue, dp[][], isVisited[][], foundNewElement,
+			 * and sbuf can be discovered.
+			 */
+			foundNewElement = false;
+			sbuf.delete(0, sbuf.length());
+		}
+		System.out.println("outerWhileLoopCount: "+outerWhileLoopCount);
+		System.out.println("innerWhileLoopCount: "+innerWhileLoopCount);
+		return al;
 	}
 	
 	private void resetMetrics() {
@@ -284,19 +444,22 @@ public class LongestCommonSubsequence {
 	
 	public static void main(String[] args) {
 		
-		String str1 = "abcd";
-		String str2 = "ijac";
+		String str1 = "bcacedcd";
+		String str2 = "abbcdebbcd";
 		// abghcef aghef
 		// abbcdebbcd bcaaedcd
+		// abcdef cbdf
 
 		LongestCommonSubsequence lcs = new LongestCommonSubsequence(); 
 		
 //		int lengthOfLCS = lcs.findLCS(str1, str2);
-		int lengthOfLCS = lcs.getLCSUsingRecursionAndMemoization(str1, str2);
+//		int lengthOfLCS = lcs.getLCSUsingRecursionAndMemoization(str1, str2);
 		
-		System.out.println("lengthOfLCS: "+lengthOfLCS);
-		System.out.println("noOfRecursiveCalls: "+lcs.noOfRecursiveCalls);
-
+//		System.out.println("lengthOfLCS: "+lengthOfLCS);
+//		System.out.println("noOfRecursiveCalls: "+lcs.noOfRecursiveCalls);
+		
+		lcs.printLCS(str1, str2);
+		
 	}
 
 }

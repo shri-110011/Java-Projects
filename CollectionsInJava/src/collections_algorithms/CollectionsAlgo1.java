@@ -37,7 +37,6 @@ public class CollectionsAlgo1 {
 		
 		System.out.println("-----------------------------");
 		
-		List<String> list3 = new ArrayList<>();
 		Queue<String> queue1 = new PriorityQueue<>();
 		
 		queue1.add("G");
@@ -87,12 +86,15 @@ public class CollectionsAlgo1 {
 		dq.add("C");
 		dq.add("Z");
 		
-		System.out.println("Deque: "+dq);
+		System.out.println("dq: "+dq);
 		Queue<String> queue2 = Collections.asLifoQueue(dq);
-		System.out.println("Queue: "+queue2);
+		System.out.println("queue2: "+queue2);
 		queue2.add("A");
-		System.out.println("Queue: "+queue2);
+		System.out.println("queue2: "+queue2);
 		System.out.println(queue2.remove());
+		System.out.println("queue2: "+queue2);
+		System.out.println(dq.remove());
+		System.out.println("dq: "+dq);
 	}
 
 }

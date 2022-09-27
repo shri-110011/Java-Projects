@@ -32,10 +32,6 @@ class LIV {
 	public String getPsf() {
 		return psf;
 	}
-	
-	public void setPsf(String psf) {
-		this.psf = psf;
-	}
 }
 public class LongestIncreasingSubsequence {
 	
@@ -383,7 +379,7 @@ public class LongestIncreasingSubsequence {
 
 	public static void main(String[] args) {
 		
-		int arr[] = {4, 2, 3, 6, 7, -1, 9, 15, 20, 14, 13, 14, 18};
+		int arr[] = {1, 2, -2, -1, 3};
 		// {1, 2, 5, 3, 4}
 		// {4, 2, 3, 6, 7, -1, 9, 15, 20, 14, 13, 14, 18}
 		// {10, 22, 42, 33, 21, 50, 41, 60, 80, 3}
@@ -398,7 +394,6 @@ public class LongestIncreasingSubsequence {
 		int lisLen[] = lis.findLISLenUsingIterationAndTabulation(arr);
 		System.out.println("lisLen: "+Arrays.toString(lisLen));
 		System.out.println("Length of LIS is: "+lis.getLengthOfLIS());
-		System.out.println("lisLen: "+Arrays.toString(lisLen));
 		System.out.println(lis.displayLIS(arr, lisLen));
 	}
 

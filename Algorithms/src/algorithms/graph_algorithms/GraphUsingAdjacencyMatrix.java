@@ -1,5 +1,6 @@
 package algorithms.graph_algorithms;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
@@ -8,14 +9,17 @@ import java.util.Stack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import algorithms.data_structures.HEAP_TYPE;
+import algorithms.data_structures.Heap;
 import algorithms.graph_algorithms.graph_exceptions.InvalidEdgeFormatException;
 import algorithms.graph_algorithms.graph_exceptions.InvalidVertexNameException;
+import algorithms.graph_algorithms.graph_exceptions.MethodNotSupportedException;
 import algorithms.graph_algorithms.graph_exceptions.NumberOfVerticesOutOfBoundsException;
 import algorithms.graph_algorithms.graph_exceptions.VertexNotExistException;
 
 public class GraphUsingAdjacencyMatrix extends Graph {
 	
-	boolean adjacencyMatrix[][];
+	int adjacencyMatrix[][];
 	
 	static final Logger log = LogManager.getLogger(GraphUsingAdjacencyMatrix.class.getName());
 	
@@ -28,20 +32,50 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		if(noOfVertices > 10 || noOfVertices < 0) {
 			throw new NumberOfVerticesOutOfBoundsException(10, noOfVertices);
 		}
-		adjacencyMatrix = new boolean[noOfVertices][noOfVertices];
+		adjacencyMatrix = new int[noOfVertices][noOfVertices];
+		
+		/* Is any cell at (i, j) in adjacencyMatrix has a 
+		 * vale of Integer.MAX_VALUE this means that the
+		 * nodes having indices i, j are not connected.
+		 */
+		for(int row[]: adjacencyMatrix)
+		Arrays.fill(row, Integer.MAX_VALUE);
+		
 		if(gt.equals(GraphType.DIRECTED))
 			isDirected = true;
 	}
 	
+	public GraphUsingAdjacencyMatrix(int noOfVertices, GraphType gt, boolean hasWeight) {
+		this(noOfVertices, gt);
+		this.hasWeight = hasWeight;
+	}
+	
 	// addEdge(int i, int j) has a time complexity of O(1)
 	public void addEdge(int i, int j) {
+		if(hasWeight) {
+			throw new MethodNotSupportedException("addEdge", "unweighted edge in weighted graph");
+		}
+		
 		// Check if i and j are valid indices for the vertices.
 		checkIfEdgeIsValid(i, j);
 			
-		adjacencyMatrix[i][j] = true;
+		adjacencyMatrix[i][j] = 1;
 		
 		if(!isDirected)
-			adjacencyMatrix[j][i] = true;
+			adjacencyMatrix[j][i] = 1;
+	}
+	
+	public void addEdge(int i, int j, int weight) {
+		if(!hasWeight) {
+			throw new MethodNotSupportedException("addEdge", "weighted edge in unweighted graph");
+		}
+		// Check if i and j are valid indices for the vertices.
+		checkIfEdgeIsValid(i, j);
+			
+		adjacencyMatrix[i][j] = weight;
+		
+		if(!isDirected)
+			adjacencyMatrix[j][i] = weight;
 	}
 	
 	/* addEdges(String connections[]) has a time complexity of
@@ -52,8 +86,12 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		for(int i=0; i<connections.length; i++) {
 			String endPoints[] = connections[i].split(" ");
 			
-			if(endPoints.length == 2) {
+			int expectedEndPointsLen = hasWeight?3:2;
+			if(endPoints.length == expectedEndPointsLen) {
+				int count = 0;
 				for(String endPoint: endPoints) {
+					if(count == 2) break;
+
 					// Here we check if vertex name is valid.
 					if(!endPoint.matches("[a-zA-Z][0-9a-zA-Z]*")) {
 						throw new InvalidVertexNameException(endPoint, connections[i], i);
@@ -63,6 +101,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 							throw new VertexNotExistException(endPoint, connections[i], i);
 						}
 					}
+					count++;
 				}
 				/* Here we are sure that the string representation of the edge
 				 * is valid so we can get the indices of the end points of the 
@@ -70,10 +109,19 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 				 */
 				int idx1 = getVertexIndex(endPoints[0]),
 					idx2 = getVertexIndex(endPoints[1]);
-				addEdge(idx1, idx2);
+				
+				if(!hasWeight)
+					addEdge(idx1, idx2);
+				else {
+					int weight = Integer.parseInt(endPoints[2]);
+					addEdge(idx1, idx2, weight);
+				}
 			}
 			else {
-				throw new InvalidEdgeFormatException(connections[i], i);
+				if(!hasWeight)
+					throw new InvalidEdgeFormatException(connections[i], i);
+				else
+					throw new InvalidEdgeFormatException(connections[i], i, hasWeight);
 			}
 		}
 	}
@@ -82,7 +130,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 * time complexity O(1).
 	 */
 	public boolean checkIfEdgeExistInGraph(int endPoint1, int endPoint2) {
-		return adjacencyMatrix[endPoint1][endPoint2];
+		return adjacencyMatrix[endPoint1][endPoint2] != Integer.MAX_VALUE;
 	}
 	
 	/* createGraph(String verticesNames[], String  connections[]) has a time complexity of
@@ -123,7 +171,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			for(int i=0; i<noOfVertices; i++) {
 				sbuf.append(getVertex(i)+" ");
 				for(int j=0; j<noOfVertices; j++) {
-					sbuf.append(adjacencyMatrix[i][j]?1:0);
+					sbuf.append(adjacencyMatrix[i][j] != Integer.MAX_VALUE?adjacencyMatrix[i][j]:"*");
 					if(j!=noOfVertices-1)
 						sbuf.append(" ");
 				}
@@ -169,10 +217,10 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	// removeEdge(int idx1, int idx2) has a time complexity of O(1).
 	@Override
 	public boolean removeEdge(int idx1, int idx2) {
-		adjacencyMatrix[idx1][idx2] = false;
+		adjacencyMatrix[idx1][idx2] = Integer.MAX_VALUE;
 		
 		if(!isDirected)
-			adjacencyMatrix[idx2][idx1] = false;
+			adjacencyMatrix[idx2][idx1] = Integer.MAX_VALUE;
 		
 		return false;
 	}
@@ -185,7 +233,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		int noOfVertices = getNoOfVertices();
 		ArrayList<Integer> adjacentNodes = new ArrayList<>();
 		for(int i=0; i<noOfVertices; i++) {
-			if(adjacencyMatrix[idx][i])
+			if(adjacencyMatrix[idx][i] != Integer.MAX_VALUE)
 				adjacentNodes.add(i);
 		}
 		return adjacentNodes;
@@ -214,7 +262,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			int source_idx = queue.peek();
 				
 			for(int i=0; i<noOfVertices; i++) {
-				if(adjacencyMatrix[source_idx][i] && !visitedNodes[i]) {
+				if(adjacencyMatrix[source_idx][i] != Integer.MAX_VALUE && !visitedNodes[i]) {
 					int destination_idx = i;
 					queue.add(destination_idx);
 					visitedNodes[destination_idx] = true;
@@ -273,7 +321,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		
 		for(int i = 0; i<noOfVertices; i++) {
 			forLoopCountInDFS++;
-			if(adjacencyMatrix[source_idx][i]) {
+			if(adjacencyMatrix[source_idx][i] != Integer.MAX_VALUE) {
 				int destination_idx = i;
 				/* At this point the vertex having index source_idx
 				 * is not completely explored so we don't remove it 
@@ -320,7 +368,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			
 			for(int i=0; i<noOfVertices; i++) {
 				innerForLoopCountInBFSCycleChecker++;
-				if(adjacencyMatrix[frontNodeInfo[0]][i]) {
+				if(adjacencyMatrix[frontNodeInfo[0]][i] != Integer.MAX_VALUE) {
 					/*
 					 * destinationIdx refers to the index of an 
 					 * adjacent node of the node having index 
@@ -372,7 +420,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		Integer topNodeInfo[] = stack.peek();
 		for(int i=0; i<noOfVertices; i++) {
 			forLoopCountInDFSCycleChecker++;
-			if(adjacencyMatrix[topNodeInfo[0]][i]) {
+			if(adjacencyMatrix[topNodeInfo[0]][i] != Integer.MAX_VALUE) {
 				/*
 				 * destinationIdx refers to the index of an 
 				 * adjacent node of the node having index 
@@ -429,7 +477,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			for(int i=0; i<noOfVertices; i++) {
 				innerForLoopCountInBFSBipartiteChecker++;
 				
-				if(adjacencyMatrix[frontNodeInfo[0]][i]) {
+				if(adjacencyMatrix[frontNodeInfo[0]][i] != Integer.MAX_VALUE) {
 					int destinationIdx = i;
 					if(nodesColor[destinationIdx] == 0) {
 						queue.add(new Integer[] {destinationIdx, frontNodeInfo[0]});
@@ -475,7 +523,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		for(int i=0; i<noOfVertices; i++) {
 			forLoopCountInDFSBipartiteChecker++;
 
-			if(adjacencyMatrix[topNodeInfo[0]][i]) {
+			if(adjacencyMatrix[topNodeInfo[0]][i] != Integer.MAX_VALUE) {
 				/*
 				 * Here we have found one adjacent node of the 
 				 * node having index topNodeInfo[0].
@@ -530,7 +578,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		
 		for(int i=0; i<noOfVertices; i++) {
 			forLoopCountInDFSCycleChecker++;
-			if(adjacencyMatrix[topNodeInfo[0]][i]) {
+			if(adjacencyMatrix[topNodeInfo[0]][i] != Integer.MAX_VALUE) {
 				/* Found the adjacent node of the node having
 				 * index curNodeIdx.
 				 */
@@ -586,7 +634,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		for(int i=0; i<noOfVertices; i++) {
 			forLoopCountInDFSTopoSort++;
 			int destinationIdx = i;
-			if(adjacencyMatrix[curNodeIdx][i]) {
+			if(adjacencyMatrix[curNodeIdx][i] != Integer.MAX_VALUE) {
 				if(!visitedNodes[destinationIdx]) {
 					visitedNodes[destinationIdx] = true;
 					// Pushing the adjacent node to the stack
@@ -615,7 +663,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			int inDegree = 0;
 			for(int j=0; j<noOfVertices; j++) {
 				innerForLoopOfIndegrees++;
-				if(adjacencyMatrix[j][i]) {
+				if(adjacencyMatrix[j][i] != Integer.MAX_VALUE) {
 					inDegree++;
 				}
 			}
@@ -648,7 +696,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			
 			for(int i=0; i<noOfVertices; i++) {
 				innerForLoopCountInBFSTopoSort++;
-				if(adjacencyMatrix[nodeIdx][i]) {
+				if(adjacencyMatrix[nodeIdx][i] != Integer.MAX_VALUE) {
 					/* Here we have found the adjacent node of the 
 					 * node having index nodeIdx. 
 					 */
@@ -675,6 +723,10 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 	 */
 	protected boolean cycleCheckerUsingBFSForDirectedGraph(Queue<Integer> queue, int inDegrees[]) {
 		
+		if(!isDirected) {
+			throw new MethodNotSupportedException("cycleCheckerUsingBFSForDirectedGraph", "undirected graph");
+		}
+		
 		int noOfZerosInInDegrees = queue.size(),
 				noOfVertices = getNoOfVertices();
 		
@@ -684,7 +736,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 			
 			for(int i=0; i<noOfVertices; i++) {
 				innerForLoopCountInBFSCycleChecker++;
-				if(adjacencyMatrix[nodeIdx][i]) {
+				if(adjacencyMatrix[nodeIdx][i] != Integer.MAX_VALUE) {
 					/* Here we have found the adjacent node of the 
 					 * node having index nodeIdx. 
 					 */
@@ -702,10 +754,212 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		return true;
 	}
 	
+	/* findSDPWeightsUsingBFS(int srcIdx) 
+	 * has a time complexity of BigOmega(|V|^2) because we are 
+	 * using BFS algorithm over here in order to find the 
+	 * shortest distance of each node from the source.
+	 * 
+	 * Space complexity is: O(N)+O(N) = O(2N)
+	 * O(N) for sda(shortest distance array[])
+	 * O(N) for the queue
+	 * 
+	 * Here we use BFS algorithm to find the weight/length 
+	 * of the shortest distance path in undirected or 
+	 * directed graphs having edge weight or not.
+	 * 
+	 * The only limitation on this algorithm is that the
+	 * the graph shouldn't contain any -ve edge cycles
+	 * because that would result in an infinite loop. 
+	 */
+	@Override
+	protected int[] findSDPWeightsUsingBFS(int srcIdx) {
+		
+//		if(isDirected) {
+//			throw new MethodNotSupportedException("findShortestDistanceInUndirectedGraph", "directed graph");
+//		}
+		
+		int sda[] = new int[getNoOfVertices()];
+		Arrays.fill(sda, Integer.MAX_VALUE);
+		
+		Queue<Integer> queue = new ArrayDeque<>();
+		
+		/* Insert the src node to the queue and put 0 at
+		 * sda[src node idx].
+		 */
+		queue.add(srcIdx);
+		sda[srcIdx] = 0;
+		
+		// Run a while loop until the queue is empty
+		while(!queue.isEmpty()) {
+			whileLoopCountInFindSDPWeights++;
+			
+			// Remove an element from the queue
+			int idx = queue.remove();
+			
+			for(int i=0; i<getNoOfVertices(); i++) {
+				forLoopCountInFindSDPWeights++;
+				int destinationIdx = -1;
+				boolean adjacentNodeFound = false;
+				if(adjacencyMatrix[idx][i] != Integer.MAX_VALUE) {
+					destinationIdx = i;
+					adjacentNodeFound = true;
+				}
+				if(adjacentNodeFound) {
+					/* Find the adjacent nodes of that removed element
+					 * and check if the distance of the adjacent node
+					 * from the src is less than the value at
+					 * sda[adjacent node idx] and sda[adjacent node idx]
+					 * is not IntMax then push that adjacent
+					 * node to the queue.
+					 */
+					int newDistance = sda[idx]+adjacencyMatrix[idx][destinationIdx];
+					if(newDistance < sda[destinationIdx]) {
+						queue.add(destinationIdx);
+						sda[destinationIdx] = newDistance;
+					}
+					adjacentNodeFound = false;
+				}
+			}
+		}
+		log.info("whileLoopCountInFindSDPWeights: "+whileLoopCountInFindSDPWeights);
+		log.info("forLoopCountInFindSDPWeights: "+forLoopCountInFindSDPWeights);
+		return sda;
+	}
+	
+	/* 
+	 * findSDPWeightsInDAG() has a time complexity of O(|V|^2).
+	 */
+	@Override
+	protected int[] findSDPWeightsInDAG(int srcIdx, ArrayList<Integer> topoSortResult) {
+		int sda[] = new int[getNoOfVertices()];
+		Arrays.fill(sda, Integer.MAX_VALUE);
+		
+		sda[srcIdx] = 0;
+		
+		for(int idx: topoSortResult) {
+			outerForLoopCountInFindSDPWeightsInDAG++;
+			for(int i=0; i<getNoOfVertices(); i++) {
+				innerForLoopCountInFindSDPWeightsInDAG++;
+				int destinationIdx = -1;
+				boolean adjacentNodeFound = false;
+				if(adjacencyMatrix[idx][i] != Integer.MAX_VALUE) {
+					destinationIdx = i;
+					adjacentNodeFound = true;
+				}
+				if(adjacentNodeFound) {
+					int newDistance = sda[idx]+adjacencyMatrix[idx][destinationIdx];
+					if(newDistance < sda[destinationIdx]) {
+						sda[destinationIdx] = newDistance;
+					}
+					adjacentNodeFound = false;
+				}
+			}
+		}
+		log.info("outerForLoopCountInFindSDPWeightsInDAG: "+outerForLoopCountInFindSDPWeightsInDAG);
+		log.info("innerForLoopCountInFindSDPWeightsInDAG: "+innerForLoopCountInFindSDPWeightsInDAG);
+		return sda;
+	}
+	
+	/* TC of findSDPWeightsUsingDijkstra(int srcIdx) is:
+	 * O(|V|*log|V| + |V|*(log(|V|)+|V|)+ |V|^2) which is
+	 * equivalent to O(|V|^2 + |V|*log(|V|)).
+	 * 
+	 * Operations being performed in Dijkstra:
+	 * 1. Extraction of node having minimum weight from the 
+	 * heap. TC: O(log|V|)
+	 * 2. Decrease key operation.
+	 * TC: O(log|V|).
+	 * 3. Finding adjacent nodes for a vertex.
+	 * TC: O(|V|)
+	 * 4. Finding index of adjacent node in the heap.
+	 * TC: O(|V|)
+	 * 
+	 * Space Complexity of 
+	 * findSDPWeightsUsingDijkstra(int srcIdx) is:
+	 * O(|V|) for creating the ArrayList to store the heap. 
+	 * 
+	 */
+	@Override
+	protected int[] findSDPWeightsUsingDijkstra(int srcIdx) {
+		int sda[] = new int[getNoOfVertices()];
+		Arrays.fill(sda, Integer.MAX_VALUE);
+		
+		/* Initialize the priority value corresponding to each 
+		 * vertex to +Inf.
+		 * 
+		 * That step is done while creation of the graph 
+		 * itself.
+		 */
+		
+		/* We use a binary min heap to store the priority 
+		 * values i.e. the reaching cost of each vertex in 
+		 * the graph.
+		 */
+		ArrayList<Vertex> al = new ArrayList<>();
+		al.addAll(getVertices());
+		Heap<Vertex> dValues = new Heap<>(al, HEAP_TYPE.MIN_HEAP);
+		dValues.heapify();
+		
+		// Make the dValue of source node to be 0.
+		Vertex srcVertex = getVertices().get(srcIdx);
+		srcVertex.setPriorityValue(0);
+		
+		// While loop will run until the heap is empty.
+		while(dValues.getHeapSize() != 0) {
+			/* Extract the node having the minimum priority 
+			 * value.
+			 */
+			whileLoopCountInFindSDPWeightsUsingDijkstra++;
+			
+			/* Here we are extracting the node having the 
+			* minimum reaching cost from the heap.
+			* 
+			* Note: The delete() in Heap<T> will return the 
+			* minimum element from the heap because we have
+			* created a min heap.
+			* 
+			* And the TC for delete() is O(log(N)) where N
+			* is the number of nodes in the heap.
+			* 
+			* Also this delete() does not remove the minimum
+			* element completely from the ArrayList al.
+			*/
+			int idx = getVertexIndex(dValues.delete().getName());
+			Vertex alternateVertex = getVertices().get(idx);
+			sda[idx] = alternateVertex.getPriorityValue();
+			
+			/* Relax the adjacent nodes of this node having 
+			 * index idx.
+			 */
+			for(int i=0; i<getNoOfVertices(); i++) {
+				forLoopCountInFindSDPWeightsUsingDijkstra++;
+				Vertex adjacentVertex = null;
+				boolean adjacentNodeFound = false;
+				int edgeWeight = 0;
+				if((edgeWeight = adjacencyMatrix[idx][i]) != Integer.MAX_VALUE) {
+					adjacentVertex = getVertex(i);
+					adjacentNodeFound = true;
+				}
+				if(adjacentNodeFound) {
+					int newPriorityValue = alternateVertex.getPriorityValue()+edgeWeight;
+					if(newPriorityValue < adjacentVertex.getPriorityValue()) {
+						// decrease key operation
+						adjacentVertex.setPriorityValue(newPriorityValue);			
+						dValues.decreaseKey(al.indexOf(adjacentVertex), adjacentVertex);
+					}
+					adjacentNodeFound = false;
+				}
+			}
+		}
+		log.info("whileLoopCountInFindSDPWeightsUsingDijkstra: "+whileLoopCountInFindSDPWeightsUsingDijkstra);
+		log.info("forLoopCountInFindSDPWeightsUsingDijkstra: "+forLoopCountInFindSDPWeightsUsingDijkstra);
+		return sda;
+	}
+	
 	public static void main(String[] args) {
 		// Create a list of Vertices.
-		String vertices[] = {"A", "B", "C", "D", "E"};
-		String edges[]= {"B A", "A C", "D C", "B D", "C E"};
+		String vertices[] = {"A", "B", "C", "D", "E", "F", "G"};
+		String edges[]= {"A B 5", "A C 1", "C E 1", "E F 1", "B D 1", "D G 2", "F B 1", "F D 3"};
 		
 		// {"A B", "A C", "B D"}
 		/* {
@@ -714,7 +968,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 		}
 		*/
 		
-		GraphUsingAdjacencyMatrix graph = new GraphUsingAdjacencyMatrix(9, GraphType.DIRECTED);
+		GraphUsingAdjacencyMatrix graph = new GraphUsingAdjacencyMatrix(9, GraphType.DIRECTED, true);
 		graph.createGraph(vertices, edges);
 		
 //		graph.addVertex("E");
@@ -764,6 +1018,7 @@ public class GraphUsingAdjacencyMatrix extends Graph {
 //		ArrayList<Integer> bfsTopoSortResult = graph.performBFSTopologicalSorting();
 //		log.info("BFS topo sort result: "+bfsTopoSortResult);
 
+		log.info("sda[]: "+Arrays.toString(graph.findSDPWeightsUsingBFS(0)));
+//		log.info("sda[]: "+Arrays.toString(graph.getSDPWeightsInDAG(0)));
 	}
-
 }
