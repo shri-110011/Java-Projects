@@ -26,7 +26,8 @@ public class ExerciseSolutionUsingJava8 {
 			
 
 		// Step 1: Sort list by name.
-		Collections.sort(list, personComparator);
+//		Collections.sort(list, personComparator);
+		Collections.sort(list, (p1, p2)-> p1.getFirstName().compareTo(p2.getFirstName()));
 		
 		/* Step 2: Create a method that prints all the elements
 		 * in the list.

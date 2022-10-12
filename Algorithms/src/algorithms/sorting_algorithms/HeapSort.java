@@ -137,6 +137,10 @@ public class HeapSort {
 	 * 
 	 * If the sift up i.e.adjustUpward() is used then 
 	 * the TC of heapify is O(N*log(N)).
+	 * 
+	 * This heapify(int heapSize) method takes the heapSize as an argument 
+	 * because it gives the flexibility to heapify a portion of the array 
+	 * a[].
 	 */
 	public void heapify(int heapSize) {
 		log.info("Heapify started ...");
@@ -225,18 +229,16 @@ public class HeapSort {
 		return new_pos;
 	}
 	
-	/* delete(int a[], HEAP_TYPE ht) will delete the 
-	 * root element from the binary heap and return it 
-	 * and this could be the maximum or the minimum 
-	 * element in the heap depending on the type of the 
-	 * heap.
+	/* delete() will delete the root element from the 
+	 * binary heap and return it and this could be the 
+	 * maximum or the minimum element in the heap 
+	 * depending on the type of the heap.
 	 */
 	public int delete() {
 		return delete(0);
 	}
 	
-	/* delete(int a[], HEAP_TYPE ht, 
-	 * int idxOfNodeToBeDeleted) will delete the 
+	/* delete(int idxOfNodeToBeDeleted) will delete the 
 	 * element at index specified by 
 	 * idxOfNodeToBeDeleted from the binary heap 
 	 * and return it.
@@ -265,7 +267,9 @@ public class HeapSort {
 		}
 	}
 	
-	/* decreaseKey() has a TC of log(N).
+	/* decreaseKey(int index, int newValue) has a TC of log(N)
+	 * and it will return the new position of the reduced value
+	 * in the heap.
 	 */
 	public int decreaseKey(int index, int newValue) {
 		if(index < 0 || index >= heapSize) {
