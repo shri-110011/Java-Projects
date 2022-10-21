@@ -8,8 +8,9 @@ public class CourseCodeConstraintValidator implements ConstraintValidator<Course
 	private String coursePrefix; 
 	
 	@Override
-	public void initialize(CourseCode theCode) {
-		coursePrefix = theCode.value();
+	public void initialize(CourseCode theCoursePrefix) {
+		System.out.println("theCoursePrefix: "+theCoursePrefix.value());
+		coursePrefix = theCoursePrefix.value();
 	}
 
 	@Override

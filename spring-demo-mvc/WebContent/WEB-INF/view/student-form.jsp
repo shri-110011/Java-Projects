@@ -10,6 +10,15 @@
 	<body>
 		<form:form action="processForm" modelAttribute="student">
 		
+			<!-- The path="firstName" maps this input control to the property
+			in our bean(Student).
+			
+			Note: When the form loads initially the data in the model
+			attribute will be populated into the form because spring-mvc
+			will call the getter methods on the modelAttribute.
+			
+			And when the form is submitted spring-mvc will call the setter 
+			methods on the modelAttribute.-->
 			First Name: <form:input path="firstName" />
 			
 			<br><br>

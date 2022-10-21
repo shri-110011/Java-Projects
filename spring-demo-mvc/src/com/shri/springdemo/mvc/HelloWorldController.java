@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+/* Here we have the controller level request mapping and all the
+ * mappings on the methods within this controller are relative to it.
+ */
 @RequestMapping("/hello")
 public class HelloWorldController {
 
@@ -21,8 +24,12 @@ public class HelloWorldController {
 		return "helloworld";
 	}
 	
-	// add new controller method to read form data
-	// and add data to the model
+	/* Add new controller method to read form data
+	 * and add data to the model.
+	 * 
+	 * When the model comes into our method as a parameter initially 
+	 * it is empty.
+	 */
 	
 	@RequestMapping("/processFormVersionTwo")
 	public String letsShoutDude(HttpServletRequest request, Model model) {
@@ -42,6 +49,12 @@ public class HelloWorldController {
 		return "helloworld";
 	}
 	
+	/* @RequestParam annotation will help to read the form data and automatically
+	 * bind it to the parameter coming into our method.
+	 * Here @RequestParam("studentName") would bind the form field having name
+	 * 'studentName' to the parameter 'theName'.
+	 * 
+	 */
 	@RequestMapping("/processFormVersionThree")
 	public String processFormVersionTree(
 			@RequestParam("studentName") String theName, 
@@ -51,7 +64,7 @@ public class HelloWorldController {
 		theName = theName.toUpperCase();
 		
 		//create the message
-		String result = "Good day my friend! "+theName; 
+		String result = "Good day my friend! "+theName;
 		
 		//add message to the model
 		model.addAttribute("message", result);

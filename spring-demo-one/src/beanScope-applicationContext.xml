@@ -14,7 +14,8 @@
     </bean>
     <!-- set up constructor injection -->
     <bean id="myCoach"
-    	  class="com.shri.springdemo.TrackCoach">
+    	  class="com.shri.springdemo.TrackCoach"
+    	  scope="singleton">
     	  <constructor-arg ref="myFortuneService"/>
     </bean>
     <bean id="myCricketCoach"

@@ -14,6 +14,7 @@ public class CricketCoach implements Coach {
 
 	public void setEmailAddress(String emailAddress) {
 		System.out.println("Inside setter method: setEmailAddress()");
+		System.out.println("emailAddress: "+emailAddress);
 		this.emailAddress = emailAddress;
 	}
 
@@ -23,6 +24,7 @@ public class CricketCoach implements Coach {
 
 	public void setTeam(String team) {
 		System.out.println("Inside setter method: setTeam()");
+		System.out.println("team: "+team);
 		this.team = team;
 	}
 

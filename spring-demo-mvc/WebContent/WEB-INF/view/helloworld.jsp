@@ -11,6 +11,7 @@
 		<hr>
 		Student name: ${param.studentName}
 		<br><br>
+		<!-- //${message} means we are reading the data form the spring model. -->
 		The message: ${message}
 	</body>
 </html>

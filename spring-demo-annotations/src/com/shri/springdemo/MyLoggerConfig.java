@@ -40,17 +40,17 @@ public class MyLoggerConfig {
 		
 	}
 	
-	public String getRootLevel() {
-		return rootLoggerLevel;
-	}
-	public void setRootLevel(String rootLoggerLevel) {
-		this.rootLoggerLevel = rootLoggerLevel;
-	}
-	public String getPrintLevel() {
-		return printLoggerLevel;
-	}
-	public void setPrintLevel(String printLoggerLevel) {
-		this.printLoggerLevel = printLoggerLevel;
-	}
+//	public String getRootLevel() {
+//		return rootLoggerLevel;
+//	}
+//	public void setRootLevel(String rootLoggerLevel) {
+//		this.rootLoggerLevel = rootLoggerLevel;
+//	}
+//	public String getPrintLevel() {
+//		return printLoggerLevel;
+//	}
+//	public void setPrintLevel(String printLoggerLevel) {
+//		this.printLoggerLevel = printLoggerLevel;
+//	}
 
 }

@@ -25,13 +25,13 @@
 	</bean>
 	
 	<!-- Load custom message resources -->
+	<!-- Note the .properties is not required in the "resources/messages" spring-
+		mvc will automatically append that.
+		Also we are placing this bean("messageSource") configuration here to 
+		fulfill our requirement of custom error messages in the form fields.
+	  -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames" value="resources/messages" />
 	</bean>
 
 </beans>
-
-
-
-
-

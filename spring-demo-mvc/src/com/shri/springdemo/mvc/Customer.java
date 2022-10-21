@@ -16,6 +16,12 @@ public class Customer {
 	@Size(min = 1, message = "is required!")
 	private String lastName;
 	
+	/* Note, we are overriding the error code with our own custom message in the 
+	 * message.properties file for the case when the type for the value for 
+	 * freePasses is not an integer in the form.
+	 * 
+	 * To find the required error code we made use of the BindingResult object.
+	 */
 	@NotNull(message = "is required!")
 	@Min(value=0, message="must be greater than or equal to 0")
 	@Max(value=10, message="must be less than or equal to 10")
@@ -24,7 +30,7 @@ public class Customer {
 	@Pattern(regexp = "^[A-Za-z0-9]{5}", message = "must have exactly 5 characters or digits")
 	private String postalCode;
 	
-	@CourseCode
+	@CourseCode(value = "Udemy", message = "must start with Udemy")
 	private String courseCode;
 	
 	public String getFirstName() {
