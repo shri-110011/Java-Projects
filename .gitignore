@@ -1,0 +1,15 @@
+target/
+
+test-output/
+
+bin/
+
+lib/
+
+resources/
+
+.settings/
+
+.classpath
+
+.project
