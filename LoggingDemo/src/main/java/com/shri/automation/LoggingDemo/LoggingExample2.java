@@ -1,6 +1,6 @@
 package com.shri.automation.LoggingDemo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 
 public class LoggingExample2 {
 	
@@ -13,7 +13,7 @@ public class LoggingExample2 {
 	}
 
 	public static void main(String[] args) {
-		Logger log = Logger.getLogger(LoggingExample2.class);
+		Logger log = LogManager.getLogger(LoggingExample2.class);
 		
 		printLogs2(log);
 
