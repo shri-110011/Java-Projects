@@ -33,7 +33,7 @@ public class DeletePacmanCourseDemo {
 			session.beginTransaction();
 			
 			//get the Pacman from the db
-			int theId = 10;
+			int theId = 11;
 			Course tempCourse = session.get(Course.class, theId);
 			
 			//delete the course

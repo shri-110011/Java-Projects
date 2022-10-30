@@ -40,10 +40,10 @@ public class CreateInstructorDemo {
 			//associate the objects
 			tempInstructor.setInstructorDetail(tempInstructorDetail);
 			
-			// Note: We can't create these Course objects and save along while saving Instructor object
-			// because while saving the Instructor, this Instructor object along with its associated
-			// object(InstructorDetail) will be stored since instructor_detail_id is the foreign key
-			// in instructor table and associates instructor to instructor_detail.
+			/* Note: We can't create these Course objects and save along while saving Instructor object
+			 because while saving the Instructor, this Instructor object along with its associated
+			 object(InstructorDetail) will be stored since instructor_detail_id is the foreign key
+			 in instructor table and associates instructor to instructor_detail.*/
 			
 			//begin the transaction
 			session.beginTransaction();

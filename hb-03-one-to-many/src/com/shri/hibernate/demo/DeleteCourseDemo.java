@@ -24,18 +24,11 @@ public class DeleteCourseDemo {
 		Session session = sessionFactory.getCurrentSession();
 		
 		try {
-			
-			//create the objects
-//			Instructor tempInstructor = 
-//					new Instructor("Chad", "Darby", "darby@luv2code.com");
-//			InstructorDetail tempInstructorDetail = 
-//					new InstructorDetail("https://luv2code.com/youtube", "Luv 2 code!!");
-			
 			//begin the transaction
 			session.beginTransaction();
 			
 			//get the course from the db
-			int theId = 10;
+			int theId = 2;
 			
 			Course tempCourse = session.get(Course.class, theId);
 			

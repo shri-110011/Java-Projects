@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.shri.hibernate.demo.entity.Course;
 import com.shri.hibernate.demo.entity.Instructor;
 import com.shri.hibernate.demo.entity.InstructorDetail;
 
@@ -16,6 +17,7 @@ public class CreateDemo {
 											.configure("hibernate.cfg.xml")
 											.addAnnotatedClass(Instructor.class)
 											.addAnnotatedClass(InstructorDetail.class)
+											.addAnnotatedClass(Course.class)
 											.buildSessionFactory();
 		
 		//create the session

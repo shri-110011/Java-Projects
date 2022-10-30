@@ -43,6 +43,9 @@ public class Course {
 	@JoinColumn(name = "instructor_id")
 	private Instructor instructor;
 	
+	/* Note: For @OneToMany the default fetch type is LAZY so here we 
+	 * are being explicit even when it is not required.
+	 */
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "course_id")
 	private List<Review> reviews;

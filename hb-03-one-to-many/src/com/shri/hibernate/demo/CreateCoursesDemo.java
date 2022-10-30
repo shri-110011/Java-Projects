@@ -8,7 +8,7 @@ import com.shri.hibernate.demo.entity.Course;
 import com.shri.hibernate.demo.entity.Instructor;
 import com.shri.hibernate.demo.entity.InstructorDetail;
 
-public class CoursesDemo {
+public class CreateCoursesDemo {
 
 	public static void main(String[] args) {
 
@@ -36,10 +36,10 @@ public class CoursesDemo {
 			
 			try {
 				
-				// Note: We can't create these Course objects and save along while saving Instructor object
-				// in CreateInstructorDemo class because while saving the Instructor, this Instructor object
-				// along with its associated object(InstructorDetail) will be stored since instructor_detail_id
-				// is the foreign key in instructor table and associates instructor to instructor_detail.
+				/* Note: We can't create these Course objects and save along while saving Instructor object
+				 in CreateInstructorDemo class because while saving the Instructor, this Instructor object
+				 along with its associated object(InstructorDetail) will be stored since instructor_detail_id
+				 is the foreign key in instructor table and associates instructor to instructor_detail.*/
 				
 				//create the Course objects
 				Course tempCourse1 = new Course("Air Guitar - The Ultimate Guide");

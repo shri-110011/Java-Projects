@@ -31,7 +31,7 @@ public class GetCourseAndReviewsDemo {
 			session.beginTransaction();
 			
 			//get the course
-			int theId = 10;
+			int theId = 1;
 			Course tempCourse = session.get(Course.class, theId);
 			
 			//print the course

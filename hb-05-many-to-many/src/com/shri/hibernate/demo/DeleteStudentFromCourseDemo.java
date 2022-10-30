@@ -35,7 +35,7 @@ public class DeleteStudentFromCourseDemo {
 			session.beginTransaction();
 			
 			//get the course from the db
-			int theId = 10;
+			int theId = 12;
 			Course tempCourse = session.get(Course.class, theId);
 			
 			System.out.println("\nLoaded course: "+tempCourse);
@@ -46,7 +46,7 @@ public class DeleteStudentFromCourseDemo {
 			students.remove(0);
 			
 			System.out.println("\nStudents in this course: "+students);
-			tempCourse.setStudents(students);
+//			tempCourse.setStudents(students);
 			
 			session.save(tempCourse);
 			

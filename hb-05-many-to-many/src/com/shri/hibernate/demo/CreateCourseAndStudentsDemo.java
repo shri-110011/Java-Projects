@@ -49,8 +49,8 @@ public class CreateCourseAndStudentsDemo {
 			System.out.println("Saving the students ...");
 			tempCourse.addStudent(tempStudent1);
 			tempCourse.addStudent(tempStudent2);
-			
-			//save the students
+		
+//			save the students
 			session.save(tempStudent1);
 			session.save(tempStudent2);
 			System.out.println("Saved students: "+tempCourse.getStudents());
