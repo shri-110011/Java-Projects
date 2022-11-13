@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.luv2code</groupId>
-	<artifactId>spring-security-demo-09-jdbc-bcrypt</artifactId>
+	<artifactId>spring-security-demo</artifactId>
 	<version>1.0</version>
 	<packaging>war</packaging>
 
