@@ -20,9 +20,9 @@ public class SportConfig {
 	
 	/* If we don't provide any bean id like this @Bean("bean-id")
 	 * and just write @Bean or @Bean() the default bean name would be 
-	 * the class name with the first letter in lower case.
+	 * the method name.
 	 */
-	@Bean()
+	@Bean
 	public Coach swimCoach() {
 		return new SwimCoach(sadFortuneService());
 	}
