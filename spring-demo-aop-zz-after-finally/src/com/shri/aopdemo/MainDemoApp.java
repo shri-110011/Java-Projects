@@ -1,9 +1,10 @@
 package com.shri.aopdemo;
 
+import java.util.List;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.shri.aopdemo.dao.AccountDAO;
-import com.shri.aopdemo.dao.MembershipDAO;
 
 public class MainDemoApp {
 
@@ -16,7 +17,7 @@ public class MainDemoApp {
 		AccountDAO accountDAO = context.getBean(AccountDAO.class);
 		
 		// get the MembershipDAO bean from spring container
-		MembershipDAO membershipDAO = context.getBean(MembershipDAO.class);
+//		MembershipDAO membershipDAO = context.getBean(MembershipDAO.class);
 		
 		// call the business method
 //		accountDAO.addAccount();
@@ -28,25 +29,28 @@ public class MainDemoApp {
 //		accountDAO.addAccount();
 //		membershipDAO.addAccount();
 //		membershipDAO.addMembership();
-		membershipDAO.addSillyMember();
-		membershipDAO.goToSleep();
+//		membershipDAO.addSillyMember();
+//		membershipDAO.goToSleep();
 		
-		Account myAccount = new Account();
+//		Account myAccount = new Account();
 		/* The following getter setter for Account is for the JoinPoint logging method argument example 
 		 */
-		myAccount.setName("Madhu");
-		myAccount.setLevel("Platinum");
+//		myAccount.setName("Madhu");
+//		myAccount.setLevel("Platinum");
 //		accountDAO.addAccount(myAccount);
 //		accountDAO.addAccount(myAccount, true);
-		accountDAO.addAccount(myAccount, true, "");
-		accountDAO.doWork();
+//		accountDAO.addAccount(myAccount, true, "");
+//		accountDAO.doWork();
 		
 		// call the AccountDAO getter and setter methods 
-		accountDAO.setName("foobar");
-		accountDAO.setServiceCode("silver");
+//		accountDAO.setName("foobar");
+//		accountDAO.setServiceCode("silver");
 		
-		String name = accountDAO.getName();
-		String serviceCode = accountDAO.getServiceCode();
+//		String name = accountDAO.getName();
+//		String serviceCode = accountDAO.getServiceCode();
+		
+		List<Account> accounts = accountDAO.findAccounts(true);
+		System.out.println(accounts);
 		
 		
 		// close the context
