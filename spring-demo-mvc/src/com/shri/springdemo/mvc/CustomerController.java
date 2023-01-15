@@ -45,7 +45,7 @@ public class CustomerController {
 		return "customer-form";
 	}
 	
-	@RequestMapping("processForm")
+	@RequestMapping("/processForm")
 	/* Here @Valid annotation indicates that the validation rules be applied on 
 	 * this theCustomer object.
 	 * 
@@ -61,7 +61,7 @@ public class CustomerController {
 	 */
 	public String processForm(@Valid @ModelAttribute Customer theCustomer, BindingResult theBindingResult) {
 		
-		System.out.println("lastName: |" + theCustomer.getLastName() + "|");
+		System.out.println("lastName1: |" + theCustomer.getLastName() + "|");
 		
 		System.out.println("BindingResult: "+theBindingResult);
 		System.out.println("\n\n");
