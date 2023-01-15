@@ -21,7 +21,7 @@ public class UnmodifiableVsImmutableList {
 
 	    Assert.assertEquals(1, modifiableList.size());
 
-	    List<String> unModifiableList=Collections.unmodifiableList(
+	    List<String> unModifiableList = Collections.unmodifiableList(
 	                                        modifiableList);
 
 	    modifiableList.add("b");
@@ -31,7 +31,7 @@ public class UnmodifiableVsImmutableList {
 	        unModifiableList.add("b");
 	        Assert.fail("add supported for unModifiableList!!");
 	    } catch (UnsupportedOperationException e) {
-	        exceptionThrown=true;
+	        exceptionThrown = true;
 	        System.out.println("unModifiableList.add() not supported");
 	    }
 	    Assert.assertTrue(exceptionThrown);
@@ -49,6 +49,7 @@ public class UnmodifiableVsImmutableList {
                                 new ArrayList<String>(modifiableList));
 
         modifiableList.add("c");
+        modifiableList.remove(0);
 
         exceptionThrown=false;
         try {

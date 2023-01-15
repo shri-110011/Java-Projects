@@ -25,9 +25,9 @@ public class TreeSetDemo {
 		
 		System.out.println(ts.floor("L"));
 		
-		System.out.println(ts.ceiling("L"));
+		System.out.println(ts.ceiling("N"));
 		
-		System.out.println(ts.lower("H"));
+		System.out.println(ts.lower("N"));
 		
 		System.out.println(ts.higher("H"));
 		
