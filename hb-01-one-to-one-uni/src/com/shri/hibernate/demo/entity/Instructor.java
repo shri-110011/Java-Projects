@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "instructor")
+@Table()
 public class Instructor {
 	
 	// annotate the class as an entity and map it to the db table
