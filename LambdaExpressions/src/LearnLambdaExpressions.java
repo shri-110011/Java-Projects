@@ -7,19 +7,18 @@ interface StringFunction {
 }
 public class LearnLambdaExpressions {
 	
-	//The LambdaExpression is used to provide implementation to a functional interface.
+	/* The LambdaExpression is used to provide implementation to a functional interface.
 	
-	//Lambda expression provides implementation of functional interface. An interface which 
-	//has only one abstract method is called functional interface. Java provides an 
-	//anotation @FunctionalInterface, which is used to declare an interface as functional 
-	//interface.
+	Lambda expression provides implementation of functional interface. An interface which 
+	has only one abstract method is called functional interface. Java provides an 
+	anotation @FunctionalInterface, which is used to declare an interface as functional 
+	interface. 
 	
-	//We use LambdaExpression because:
-	//1. To provide the implementation of Functional interface.
-	//2. Less coding.
+	We use LambdaExpression because:
+	1. To provide the implementation of Functional interface.
+	2. Less coding. */
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		StringFunction exclaim = (s)->s+"!";
 		StringFunction ask = (s)->s+"?";
 		printFormatted("Hello", exclaim);
