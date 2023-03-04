@@ -25,7 +25,6 @@ class NewThread4 implements Runnable {
 			System.out.println(name+" interrupted.");
 		}
 		System.out.println(name+" exiting.");
-		
 	}
 	
 }

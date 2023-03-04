@@ -5,7 +5,7 @@
 		<welcome-file>index1.html</welcome-file>  
 	</welcome-file-list>
  
-	<!-- <servlet>
+	<servlet>
 		<servlet-name>abc</servlet-name>
 		<servlet-class>com.shri.servlet.AddServlet</servlet-class>
 	</servlet>
@@ -23,10 +23,10 @@
 	<servlet-mapping>
  		<servlet-name>pqr</servlet-name>
  		<url-pattern>/square</url-pattern>
-	</servlet-mapping> -->
+	</servlet-mapping>
 	
 	
-	<!-- <servlet>
+	<servlet>
  		<servlet-name>xyz</servlet-name>
 	 	<servlet-class>com.shri.servlet.MyServlet</servlet-class>
 	 	<init-param>
@@ -42,7 +42,7 @@
 	<servlet-mapping>
  		<servlet-name>xyz</servlet-name>
  		<url-pattern>/home</url-pattern>
-	</servlet-mapping> -->
+	</servlet-mapping>
 	
 	<context-param>
 		<param-name>name</param-name>

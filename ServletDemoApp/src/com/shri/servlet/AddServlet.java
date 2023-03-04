@@ -1,7 +1,9 @@
 package com.shri.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -10,15 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/add")
+//@WebServlet("/add")
 public class AddServlet extends HttpServlet {
 	
-
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 		
 		System.out.println("Inside AddServlet!");
 		
-		double num1 =  Double.parseDouble(req.getParameter("num1"));
+		double num1 = Double.parseDouble(req.getParameter("num1"));
 		double num2 = Double.parseDouble(req.getParameter("num2"));
 		
 		double sum = num1+num2;
@@ -27,16 +28,16 @@ public class AddServlet extends HttpServlet {
 //		out.println("Sum is: "+sum);
 		
 //		-------------------------------
-		
 //		req.setAttribute("sum", sum);
 //		
-//		//This RequestDispatcher object we can use to transfer data from one servlet to another servlet when the 
-		//whole website is there in the same domain.
-		
-		//For use cases like Payment Gateway in a shopping website the client needs to informed that he is going to 
-		//be redirected, there we can't use this RequestDispatcher object's forward().
-		
-//		RequestDispatcher rd = req.getRequestDispatcher("square");
+//		/* This RequestDispatcher object we can use to transfer data from one servlet to another servlet 
+//		 * when the whole website is there in the same domain.
+//		 
+//		   For use cases like Payment Gateway in a shopping website the client needs to informed that he is 
+//		   going to be redirected, there we can't use this RequestDispatcher object's forward().
+//		 */
+//		
+//		RequestDispatcher rd = req.getRequestDispatcher("/square");
 //		rd.forward(req,  res);
 		
 //		-------------------------------
@@ -52,11 +53,13 @@ public class AddServlet extends HttpServlet {
 		
 //		-------------------------------
 		
+		/* Note: While using sendRedirect() we should not put '/' before the  
+		 * servlet url pattern otherwise this would cause a 404 error.
+		 */
 		res.sendRedirect("square");
-		
 //		-------------------------------
 		
-		//This technique of transferring data from one servlet to another servlet is called URL re-writing.
+		// This technique of transferring data from one servlet to another servlet is called URL re-writing.
 //		res.sendRedirect("square?sum="+sum);
 		
 	}

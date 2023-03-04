@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/square")
+//@WebServlet("/square")
 public class SquareServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -28,13 +28,13 @@ public class SquareServlet extends HttpServlet {
 		HttpSession session = req.getSession();
 		
 		double num = (double)session.getAttribute("sum");
-//		
+		
 		//--------------------------------
 		
 //		double num = 0;
 //		
 //		Cookie cookies[] = req.getCookies();
-//		
+		
 //		for(Cookie cookie: cookies) {
 //			if(cookie.getName().equals("sum")) {
 //				num = Double.parseDouble(cookie.getValue());
@@ -48,7 +48,7 @@ public class SquareServlet extends HttpServlet {
 		PrintWriter out = res.getWriter();
 		out.println("<html><body bgcolor='purple' style='color: white'>");
 		out.println("Square of sum is: "+square);
-		out.println("</body><html>");
+		out.println("</body></html>");
 		
 	}
 	
