@@ -35,10 +35,11 @@ public class Test {
 
 			@Override
 			public void m2() {
+				super.m1();
 				System.out.println("Inside B: m1()");
 			}};
 		
-		a.m2();
+		a.m1();
 	}
 }
 
